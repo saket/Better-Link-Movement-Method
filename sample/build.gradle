@@ -3,12 +3,18 @@ plugins {
 }
 apply plugin: 'com.android.application'
 
+repositories {
+    maven {
+        url 'http://dl.bintray.com/saketme/maven'
+    }
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "24.0.0"
     defaultConfig {
         applicationId 'me.saket.betterlinkmovement.sample'
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -28,6 +34,5 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile project(path: ':library')
+    compile 'me.saket:better-link-movement-method:1.0'
 }

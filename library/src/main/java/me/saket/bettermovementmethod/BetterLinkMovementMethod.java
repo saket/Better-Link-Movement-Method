@@ -121,6 +121,9 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     private BetterLinkMovementMethod() {
     }
 
+    /**
+     * Set a listener that will get called whenever any link is clicked on the TextView.
+     */
     public BetterLinkMovementMethod setOnLinkClickListener(OnLinkClickListener onLinkClickListener) {
         if (this == singleInstance) {
             throw new UnsupportedOperationException("Setting a click listener on the instance returned by getInstance() is not supported. " +

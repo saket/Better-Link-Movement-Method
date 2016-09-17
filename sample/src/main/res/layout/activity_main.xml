@@ -5,30 +5,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".sample.MainActivity">
+    tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/text1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginBottom="8dp"
-        android:layout_weight="1"
         android:background="#413f3f"
         android:gravity="center"
-        android:padding="32dp"
-        android:text="@string/dummy_text_1" />
-
-    <TextView
-        android:id="@+id/text2"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
-        android:background="#413f3f"
-        android:visibility="invisible"
-        android:gravity="center"
-        android:padding="32dp"
-        android:text="@string/dummy_text_2" />
+        android:padding="48dp"
+        android:text="@string/bettermovementmethod_dummy_text" />
 </LinearLayout>

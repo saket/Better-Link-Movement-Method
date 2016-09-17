@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">BetterLinkMovement</string>
-    <string name="dummy_text_1">When a forest grows too wild, a purging fire is inevitable and natural. 7899859911</string>
-    <string name="dummy_text_2">Tomorrow, the world will watch in horror as its greatest city destroys itself. 7899859911</string>
+    <string name="bettermovementmethod_app_name">BetterLinkMovement</string>
+    <string name="bettermovementmethod_dummy_text">When a forest grows too wild, a purging fire is inevitable and natural. 7899859911</string>
 </resources>
