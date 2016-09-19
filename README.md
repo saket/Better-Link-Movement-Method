@@ -12,6 +12,8 @@ BetterLinkMovementMethod improves over `LinkMovementMethod`, by fixing its flaws
 
 A detailed explanation of why (and when) you should use `BetterLinkMovementMethod` can be read on my blog: http://saket.me/better-url-handler-textview-android/
 
+Feel free to give a shoutout on Twitter [@Saketme](twitter.com/saketme) if you're using this in your app.
+
 ## Download
 
 Add this to your module's `build.gradle`:
