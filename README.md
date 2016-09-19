@@ -1,5 +1,7 @@
 # BetterLinkMovementMethod
 
+![Better-Link-Movement-Method](https://github.com/Saketme/Better-Link-Movement-Method/blob/master/EXAMPLE.gif)
+
 When `android:autoLink="all"` or `Linkify.addLinks(textView, Linkify.ALL)` is used to add links to web URLs, phone-numbers, map addresses or email addresses in a TextView, Android uses a class known as `LinkMovementMethod` that handles highlighting links when they're focused and dispatching an Intent when they're clicked.
 
 BetterLinkMovementMethod improves over `LinkMovementMethod`, by fixing its flaws:
