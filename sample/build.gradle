@@ -4,18 +4,16 @@ plugins {
 apply plugin: 'com.android.application'
 
 repositories {
-    maven {
-        url 'http://dl.bintray.com/saketme/maven'
-    }
+    jcenter()
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "24.0.0"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
     defaultConfig {
         applicationId 'me.saket.betterlinkmovement.sample'
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
     }
