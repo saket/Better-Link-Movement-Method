@@ -104,6 +104,10 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 }
 ```
 
+## Contributions
+
+If you think that the APIs or the implementation can be improved, please feel free to raise a pull-request. 
+
 ## License
 
 This library is licensed under GNU GPL v3, which can be [read here](https://github.com/Saketme/Better-Link-Movement-Method/blob/master/LICENSE.md). It's longer than the Bible so you'd probably never read it.
