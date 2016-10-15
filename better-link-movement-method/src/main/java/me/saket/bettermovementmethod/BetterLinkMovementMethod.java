@@ -29,6 +29,7 @@ import android.widget.TextView;
 public class BetterLinkMovementMethod extends LinkMovementMethod {
 
     private static final Class SPAN_CLASS = ClickableSpan.class;
+    private static final int LINKIFY_NONE = -2;
     private static BetterLinkMovementMethod singleInstance;
 
     private OnLinkClickListener onLinkClickListener;
@@ -62,10 +63,19 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     public static BetterLinkMovementMethod linkify(int linkifyMask, TextView... textViews) {
         BetterLinkMovementMethod movementMethod = newInstance();
         for (TextView textView : textViews) {
-            textView.setMovementMethod(movementMethod);
-            Linkify.addLinks(textView, linkifyMask);
+            addLinks(linkifyMask, movementMethod, textView);
         }
         return movementMethod;
+    }
+
+    /**
+     * Like {@link #linkify(int, TextView...)}, but can be used for TextViews with HTML links.
+     *
+     * @param textViews The TextViews on which a {@link BetterLinkMovementMethod} should be registered.
+     * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
+     */
+    public static BetterLinkMovementMethod linkifyHtml(TextView... textViews) {
+        return linkify(LINKIFY_NONE, textViews);
     }
 
     /**
@@ -77,24 +87,17 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
      */
     public static BetterLinkMovementMethod linkify(int linkifyMask, ViewGroup viewGroup) {
         BetterLinkMovementMethod movementMethod = newInstance();
-        rLinkify(linkifyMask, viewGroup, movementMethod);
+        rAddLinks(linkifyMask, viewGroup, movementMethod);
         return movementMethod;
     }
 
-    private static void rLinkify(int linkifyMask, ViewGroup viewGroup, BetterLinkMovementMethod movementMethod) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
-
-            if (child instanceof ViewGroup) {
-                // Recursively find child TextViews.
-                rLinkify(linkifyMask, ((ViewGroup) child), movementMethod);
-
-            } else if (child instanceof TextView) {
-                TextView textView = (TextView) child;
-                textView.setMovementMethod(movementMethod);
-                Linkify.addLinks(textView, linkifyMask);
-            }
-        }
+    /**
+     * Like {@link #linkify(int, TextView...)}, but can be used for TextViews with HTML links.
+     *
+     * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
+     */
+    public static BetterLinkMovementMethod linkifyHtml(ViewGroup viewGroup) {
+        return linkify(LINKIFY_NONE, viewGroup);
     }
 
     /**
@@ -107,7 +110,41 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     public static BetterLinkMovementMethod linkify(int linkifyMask, Activity activity) {
         // Find the layout passed to setContentView().
         ViewGroup activityLayout = ((ViewGroup) ((ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT)).getChildAt(0));
-        return linkify(linkifyMask, activityLayout);
+
+        BetterLinkMovementMethod movementMethod = newInstance();
+        rAddLinks(linkifyMask, activityLayout, movementMethod);
+        return movementMethod;
+    }
+
+    /**
+     * Like {@link #linkify(int, TextView...)}, but can be used for TextViews with HTML links.
+     *
+     * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
+     */
+    public static BetterLinkMovementMethod linkifyHtml(Activity activity) {
+        return linkify(LINKIFY_NONE, activity);
+    }
+
+    private static void rAddLinks(int linkifyMask, ViewGroup viewGroup, BetterLinkMovementMethod movementMethod) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+
+            if (child instanceof ViewGroup) {
+                // Recursively find child TextViews.
+                rAddLinks(linkifyMask, ((ViewGroup) child), movementMethod);
+
+            } else if (child instanceof TextView) {
+                TextView textView = (TextView) child;
+                addLinks(linkifyMask, movementMethod, textView);
+            }
+        }
+    }
+
+    private static void addLinks(int linkifyMask, BetterLinkMovementMethod movementMethod, TextView textView) {
+        if (linkifyMask != LINKIFY_NONE) {
+            textView.setMovementMethod(movementMethod);
+            Linkify.addLinks(textView, linkifyMask);
+        }
     }
 
     /**

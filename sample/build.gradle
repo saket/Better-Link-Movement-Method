@@ -32,5 +32,5 @@ android {
 }
 
 dependencies {
-    compile 'me.saket:better-link-movement-method:1.0'
+compile project(path: ':better-link-movement-method')
 }

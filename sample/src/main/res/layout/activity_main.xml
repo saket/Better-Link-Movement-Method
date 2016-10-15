@@ -5,16 +5,65 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="HardcodedText">
 
-    <TextView
-        android:id="@+id/text1"
+    <FrameLayout style="@style/BetterLinkMovementMethodContainer">
+
+        <TextView
+            android:id="@android:id/text1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="8dp"
+            android:text="@string/bettermovementmethod_dummy_text_long" />
+    </FrameLayout>
+
+    <LinearLayout
+        style="@style/BetterLinkMovementMethodContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginBottom="8dp"
-        android:background="#413f3f"
-        android:gravity="center"
-        android:padding="48dp"
-        android:text="@string/bettermovementmethod_dummy_text" />
+        android:layout_marginTop="16dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="4dp">
+
+            <TextView
+                style="@style/BetterLinkMovementMethodSubtitle"
+                android:text="Phone" />
+
+            <TextView
+                style="@style/BetterLinkMovementMethodSubtitle"
+                android:layout_marginTop="12dp"
+                android:text="Email" />
+
+            <TextView
+                style="@style/BetterLinkMovementMethodSubtitle"
+                android:layout_marginTop="12dp"
+                android:text="Location" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/BetterLinkMovementMethodText"
+                android:text="@string/bettermovementmethod_dummy_number" />
+
+            <TextView
+                style="@style/BetterLinkMovementMethodText"
+                android:text="bruce@wayne.org" />
+
+            <TextView
+                style="@style/BetterLinkMovementMethodText"
+                android:text="https://goo.gl/maps/KfRBC6KLHA12" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
