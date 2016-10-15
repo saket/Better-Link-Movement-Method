@@ -125,28 +125,6 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         return linkify(LINKIFY_NONE, activity);
     }
 
-    private static void rAddLinks(int linkifyMask, ViewGroup viewGroup, BetterLinkMovementMethod movementMethod) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
-
-            if (child instanceof ViewGroup) {
-                // Recursively find child TextViews.
-                rAddLinks(linkifyMask, ((ViewGroup) child), movementMethod);
-
-            } else if (child instanceof TextView) {
-                TextView textView = (TextView) child;
-                addLinks(linkifyMask, movementMethod, textView);
-            }
-        }
-    }
-
-    private static void addLinks(int linkifyMask, BetterLinkMovementMethod movementMethod, TextView textView) {
-        if (linkifyMask != LINKIFY_NONE) {
-            textView.setMovementMethod(movementMethod);
-            Linkify.addLinks(textView, linkifyMask);
-        }
-    }
-
     /**
      * Get a static instance of BetterLinkMovementMethod. Do note that registering a click listener on the returned
      * instance is not supported because it will potentially be shared on multiple TextViews.
@@ -174,6 +152,29 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         return this;
     }
 
+// ======== PUBLIC APIs END ======== //
+
+    private static void rAddLinks(int linkifyMask, ViewGroup viewGroup, BetterLinkMovementMethod movementMethod) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+
+            if (child instanceof ViewGroup) {
+                // Recursively find child TextViews.
+                rAddLinks(linkifyMask, ((ViewGroup) child), movementMethod);
+
+            } else if (child instanceof TextView) {
+                TextView textView = (TextView) child;
+                addLinks(linkifyMask, movementMethod, textView);
+            }
+        }
+    }
+
+    private static void addLinks(int linkifyMask, BetterLinkMovementMethod movementMethod, TextView textView) {
+        if (linkifyMask != LINKIFY_NONE) {
+            textView.setMovementMethod(movementMethod);
+            Linkify.addLinks(textView, linkifyMask);
+        }
+    }
 
     @Override
     public boolean onTouchEvent(TextView view, Spannable text, MotionEvent event) {

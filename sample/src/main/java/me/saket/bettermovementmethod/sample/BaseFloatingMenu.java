@@ -19,30 +19,25 @@ import android.widget.Toast;
 /**
  * Similar to Marshmallow's floating contextual menu.
  */
-public class FloatingMenu extends PopupWindow implements View.OnClickListener {
+public abstract class BaseFloatingMenu extends PopupWindow implements View.OnClickListener {
 
     private final Context context;
     private final View anchorView;
-    private final String phoneAddress;
+    private final String url;
 
-    public FloatingMenu(Context context, View anchorView, String phoneAddress) {
+    public BaseFloatingMenu(Context context, View anchorView, String url) {
         super(context);
         this.context = context;
         this.anchorView = anchorView;
-        this.phoneAddress = phoneAddress;
-    }
-
-    public static void show(Context context, View anchorView, String phoneAddress) {
-        FloatingMenu floatingMenu = new FloatingMenu(context, anchorView, phoneAddress);
-        floatingMenu.show();
+        this.url = url;
     }
 
     /**
-     * Shows this menu popup anchored on the View set using {@link FloatingMenu#show(Context, View, String)}.
+     * Shows this menu popup.
      */
     @SuppressLint("InflateParams")
     public void show() {
-        final View menuLayout = LayoutInflater.from(context).inflate(R.layout.phone_number_floating_menu, null);
+        final View menuLayout = LayoutInflater.from(context).inflate(getMenuLayout(), null);
         registerButtonClickListeners((ViewGroup) menuLayout);
         setContentView(menuLayout);
 
@@ -61,6 +56,10 @@ public class FloatingMenu extends PopupWindow implements View.OnClickListener {
         final Point showPoint = determineShowPoint(menuLayout);
         showAtLocation(anchorView, Gravity.NO_GRAVITY, showPoint.x, showPoint.y);
     }
+
+    protected abstract int getMenuLayout();
+
+    protected abstract void handleMenuClick(int menuItemId);
 
     private void registerButtonClickListeners(ViewGroup menuLayout) {
         // Find all buttons in the layout and register their click listeners.
@@ -87,43 +86,36 @@ public class FloatingMenu extends PopupWindow implements View.OnClickListener {
         return new Point(x, y);
     }
 
+    public Context getContext() {
+        return context;
+    }
+
+    public String getURL() {
+        return url;
+    }
+
 // ======== CLICK LISTENERS ======== //
 
     @Override
     public void onClick(View menuButton) {
-        switch (menuButton.getId()) {
-            case R.id.btn_call:
-                onCallAddressClick();
-                break;
-
-            case R.id.btn_compose_sms:
-                onComposeNewSmsClick();
-                break;
-
-            case R.id.btn_copy:
-                onCopyAddressClick();
-                break;
-
-            case R.id.btn_save:
-                onAddToContactsClick();
-                break;
-        }
+        handleMenuClick(menuButton.getId());
         dismiss();
     }
 
+
     private void onCallAddressClick() {
-        Intent dialIntent = new Intent(Intent.ACTION_DIAL, Uri.parse(phoneAddress)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent dialIntent = new Intent(Intent.ACTION_DIAL, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(dialIntent);
     }
 
     private void onComposeNewSmsClick() {
-        Intent smsIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + phoneAddress));
+        Intent smsIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + url));
         context.startActivity(smsIntent);
     }
 
     private void onCopyAddressClick() {
         final ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        final ClipData clip = ClipData.newPlainText(context.getPackageName(), phoneAddress);
+        final ClipData clip = ClipData.newPlainText(context.getPackageName(), url);
         clipboard.setPrimaryClip(clip);
         Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show();
     }
@@ -131,7 +123,7 @@ public class FloatingMenu extends PopupWindow implements View.OnClickListener {
     private void onAddToContactsClick() {
         final Intent addContactIntent = new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT);
         addContactIntent.putExtra("finishActivityOnSaveCompleted", true);
-        addContactIntent.setData(Uri.fromParts("tel", phoneAddress, null));
+        addContactIntent.setData(Uri.fromParts("tel", url, null));
         addContactIntent.putExtra(ContactsContract.Intents.EXTRA_FORCE_CREATE, true);
         context.startActivity(addContactIntent);
     }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    tools:ignore="HardcodedText">
+
+    <Button
+        android:id="@+id/btn_navigate"
+        style="@style/Button.FloatingMenu"
+        android:text="Navigate" />
+
+    <Button
+        android:id="@+id/btn_open"
+        style="@style/Button.FloatingMenu"
+        android:text="Open" />
+</LinearLayout>

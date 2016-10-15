@@ -19,7 +19,14 @@ public class MainActivity extends Activity {
 
         BetterLinkMovementMethod.OnLinkClickListener urlClickListener = (view, url) -> {
             if (isPhoneNumber(url)) {
-                FloatingMenu.show(this, view, url);
+                FloatingMenuPhone.show(this, view, url);
+
+            } else if (isEmailAddress(url)) {
+                EmailFloatingMenu.show(this, view, url);
+
+            } else if (isMapAddress(url)) {
+                MapFloatingMenu.show(this, view, url);
+
             } else {
                 Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
             }
@@ -35,6 +42,14 @@ public class MainActivity extends Activity {
 
     private boolean isPhoneNumber(String url) {
         return url.endsWith(getString(R.string.bettermovementmethod_dummy_number));
+    }
+
+    private boolean isEmailAddress(String url) {
+        return url.contains("@");
+    }
+
+    private boolean isMapAddress(String url) {
+        return url.contains("goo.gl/maps");
     }
 
 }
