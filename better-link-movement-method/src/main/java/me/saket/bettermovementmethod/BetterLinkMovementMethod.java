@@ -18,10 +18,13 @@ import android.widget.TextView;
 
 /**
  * Handles URL clicks on TextViews. Unlike the default implementation, this:
- *
- * <ul> <li>Reliably applies a highlight color on links when they're touched.</li> <li>Let's you handle URL clicks</li> <li>Correctly identifies
- * touched URLs (Unlike the default implementation where a click is registered even if it's made outside of the URL's bounds if there is no more text
- * in that direction.)</li> </ul>
+ * <p>
+ * <ul>
+ * <li>Reliably applies a highlight color on links when they're touched.</li>
+ * <li>Let's you handle URL clicks</li>
+ * <li>Correctly identifies touched URLs (Unlike the default implementation where a click is registered even if it's
+ * made outside of the URL's bounds if there is no more text in that direction.)</li>
+ * </ul>
  */
 public class BetterLinkMovementMethod extends LinkMovementMethod {
 
@@ -29,10 +32,10 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     private static BetterLinkMovementMethod singleInstance;
 
     private OnLinkClickListener onLinkClickListener;
-    private TextView textView;
     private final RectF touchedLineBounds = new RectF();
     private boolean isUrlHighlighted;
     private boolean touchStartedOverLink;
+    private int activeTextViewHashcode;
 
     public interface OnLinkClickListener {
         /**
@@ -51,8 +54,8 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     }
 
     /**
-     * @param linkifyMask One of {@link Linkify#ALL}, {@link Linkify#PHONE_NUMBERS}, {@link Linkify#MAP_ADDRESSES}, {@link Linkify#WEB_URLS} and
-     *                    {@link Linkify#EMAIL_ADDRESSES}.
+     * @param linkifyMask One of {@link Linkify#ALL}, {@link Linkify#PHONE_NUMBERS}, {@link Linkify#MAP_ADDRESSES},
+     *                    {@link Linkify#WEB_URLS} and {@link Linkify#EMAIL_ADDRESSES}.
      * @param textViews   The TextViews on which a {@link BetterLinkMovementMethod} should be registered.
      * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
      */
@@ -68,8 +71,8 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     /**
      * Recursively register a {@link BetterLinkMovementMethod} on every TextView inside a layout.
      *
-     * @param linkifyMask One of {@link Linkify#ALL}, {@link Linkify#PHONE_NUMBERS}, {@link Linkify#MAP_ADDRESSES}, {@link Linkify#WEB_URLS} and
-     *                    {@link Linkify#EMAIL_ADDRESSES}.
+     * @param linkifyMask One of {@link Linkify#ALL}, {@link Linkify#PHONE_NUMBERS}, {@link Linkify#MAP_ADDRESSES},
+     *                    {@link Linkify#WEB_URLS} and {@link Linkify#EMAIL_ADDRESSES}.
      * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
      */
     public static BetterLinkMovementMethod linkify(int linkifyMask, ViewGroup viewGroup) {
@@ -97,8 +100,8 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     /**
      * Recursively register a {@link BetterLinkMovementMethod} on every TextView inside a layout.
      *
-     * @param linkifyMask One of {@link Linkify#ALL}, {@link Linkify#PHONE_NUMBERS}, {@link Linkify#MAP_ADDRESSES}, {@link Linkify#WEB_URLS} and
-     *                    {@link Linkify#EMAIL_ADDRESSES}.
+     * @param linkifyMask One of {@link Linkify#ALL}, {@link Linkify#PHONE_NUMBERS}, {@link Linkify#MAP_ADDRESSES},
+     *                    {@link Linkify#WEB_URLS} and {@link Linkify#EMAIL_ADDRESSES}.
      * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
      */
     public static BetterLinkMovementMethod linkify(int linkifyMask, Activity activity) {
@@ -108,8 +111,8 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     }
 
     /**
-     * Get a static instance of BetterLinkMovementMethod. Do note that registering a click listener on the returned instance is not supported because
-     * it will potentially be shared on multiple TextViews.
+     * Get a static instance of BetterLinkMovementMethod. Do note that registering a click listener on the returned
+     * instance is not supported because it will potentially be shared on multiple TextViews.
      */
     public static BetterLinkMovementMethod getInstance() {
         if (singleInstance == null) {
@@ -134,22 +137,24 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         return this;
     }
 
+
     @Override
     public boolean onTouchEvent(TextView view, Spannable text, MotionEvent event) {
-        if (view != this.textView) {
-            // Workaround for a bug where TextView stops calling onTouchEvent() once any URL is highlighted. This resets any "autoLink"
-            // property set in XML.
-            textView = view;
+        if (activeTextViewHashcode != view.hashCode()) {
+            // Bug workaround: TextView stops calling onTouchEvent() once any URL is highlighted.
+            // A hacky solution is to reset any "autoLink" property set in XML. But we also want
+            // to do this once per TextView.
+            activeTextViewHashcode = view.hashCode();
             view.setAutoLinkMask(0);
         }
 
-        final URLSpan touchedURLSpan = findURLSpanUnderTouch(text, event);
+        final URLSpan touchedURLSpan = findURLSpanUnderTouch(view, text, event);
 
         // Toggle highlight
         if (touchedURLSpan != null) {
-            highlightURL(touchedURLSpan, text);
+            highlightURL(view, touchedURLSpan, text);
         } else {
-            removeUrlHighlightColor();
+            removeUrlHighlightColor(view);
         }
 
         switch (event.getAction()) {
@@ -158,16 +163,18 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
                 return true;
 
             case MotionEvent.ACTION_UP:
-                // Register a click only if the touch started on an URL. That is, the touch did not start elsewhere and ended up on an URL.
+                // Register a click only if the touch started on an URL. That is, the touch did not start
+                // elsewhere and ended up on an URL.
                 if (touchedURLSpan != null && touchStartedOverLink) {
-                    dispatchUrlClick(touchedURLSpan);
-                    removeUrlHighlightColor();
+                    dispatchUrlClick(view, touchedURLSpan);
+                    removeUrlHighlightColor(view);
 
                 }
                 touchStartedOverLink = false;
 
-                // Consume this event even if we could not find any spans. Android's TextView implementation has a bug where links get clicked
-                // even when there is no more text next to the link and the touch lies outside its bounds in the same direction.
+                // Consume this event even if we could not find any spans. Android's TextView implementation
+                // has a bug where links get clicked even when there is no more text next to the link and the
+                // touch lies outside its bounds in the same direction.
                 return true;
 
             case MotionEvent.ACTION_MOVE:
@@ -183,9 +190,9 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
      *
      * @return The touched URLSpan or null.
      */
-    protected URLSpan findURLSpanUnderTouch(Spannable text, MotionEvent event) {
-        // So we need to find the location in text where touch was made, regardless of whether the TextView has scrollable text.
-        // That is, not the entire text is currently visible.
+    protected URLSpan findURLSpanUnderTouch(TextView textView, Spannable text, MotionEvent event) {
+        // So we need to find the location in text where touch was made, regardless of whether the TextView
+        // has scrollable text. That is, not the entire text is currently visible.
         int touchX = (int) event.getX();
         int touchY = (int) event.getY();
 
@@ -226,7 +233,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     /**
      * Adds a highlight background color span to the TextView.
      */
-    protected void highlightURL(URLSpan urlSpan, Spannable text) {
+    protected void highlightURL(TextView textView, URLSpan urlSpan, Spannable text) {
         if (isUrlHighlighted) {
             return;
         }
@@ -243,7 +250,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     /**
      * Removes the highlight color under the Url.
      */
-    protected void removeUrlHighlightColor() {
+    protected void removeUrlHighlightColor(TextView textView) {
         if (!isUrlHighlighted) {
             return;
         }
@@ -261,7 +268,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         Selection.removeSelection(text);
     }
 
-    protected void dispatchUrlClick(URLSpan span) {
+    protected void dispatchUrlClick(TextView textView, URLSpan span) {
         final String spanUrl = span.getURL();
         boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, spanUrl);
         if (!handled) {
