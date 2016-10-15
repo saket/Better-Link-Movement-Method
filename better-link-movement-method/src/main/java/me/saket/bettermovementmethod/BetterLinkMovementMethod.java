@@ -9,6 +9,7 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.view.MotionEvent;
 import android.view.View;
@@ -324,9 +325,14 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
 
         static final ClickableSpanWithText ofSpan(TextView textView, ClickableSpan span) {
             Spanned s = (Spanned) textView.getText();
-            int start = s.getSpanStart(span);
-            int end = s.getSpanEnd(span);
-            String text = s.subSequence(start, end).toString();
+            String text;
+            if (span instanceof URLSpan) {
+                text = ((URLSpan) span).getURL();
+            } else {
+                int start = s.getSpanStart(span);
+                int end = s.getSpanEnd(span);
+                text = s.subSequence(start, end).toString();
+            }
             return new ClickableSpanWithText(span, text);
         }
 
