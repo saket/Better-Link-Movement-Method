@@ -5,10 +5,10 @@ import android.graphics.RectF;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
-import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.view.MotionEvent;
 import android.view.View;
@@ -186,25 +186,25 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
             view.setAutoLinkMask(0);
         }
 
-        final URLSpan touchedURLSpan = findURLSpanUnderTouch(view, text, event);
+        final ClickableSpanWithText touchedClickableSpan = findClickableSpanUnderTouch(view, text, event);
 
         // Toggle highlight
-        if (touchedURLSpan != null) {
-            highlightURL(view, touchedURLSpan, text);
+        if (touchedClickableSpan != null) {
+            highlightURL(view, touchedClickableSpan, text);
         } else {
             removeUrlHighlightColor(view);
         }
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                touchStartedOverLink = touchedURLSpan != null;
+                touchStartedOverLink = touchedClickableSpan != null;
                 return true;
 
             case MotionEvent.ACTION_UP:
                 // Register a click only if the touch started on an URL. That is, the touch did not start
                 // elsewhere and ended up on an URL.
-                if (touchedURLSpan != null && touchStartedOverLink) {
-                    dispatchUrlClick(view, touchedURLSpan);
+                if (touchedClickableSpan != null && touchStartedOverLink) {
+                    dispatchUrlClick(view, touchedClickableSpan);
                     removeUrlHighlightColor(view);
 
                 }
@@ -224,11 +224,11 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     }
 
     /**
-     * Determines the touched location inside the TextView's text and returns the URLSpan found under it (if any).
+     * Determines the touched location inside the TextView's text and returns the ClickableSpan found under it (if any).
      *
-     * @return The touched URLSpan or null.
+     * @return The touched ClickableSpan or null.
      */
-    protected URLSpan findURLSpanUnderTouch(TextView textView, Spannable text, MotionEvent event) {
+    protected ClickableSpanWithText findClickableSpanUnderTouch(TextView textView, Spannable text, MotionEvent event) {
         // So we need to find the location in text where touch was made, regardless of whether the TextView
         // has scrollable text. That is, not the entire text is currently visible.
         int touchX = (int) event.getX();
@@ -252,14 +252,14 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         touchedLineBounds.bottom = layout.getLineBottom(touchedLine);
 
         if (touchedLineBounds.contains(touchX, touchY)) {
-            // Find any URLSpan that lies under the touched area
+            // Find any ClickableSpan that lies under the touched area
             final Object[] spans = text.getSpans(touchOffset, touchOffset, SPAN_CLASS);
             for (final Object span : spans) {
-                if (span instanceof URLSpan) {
-                    return ((URLSpan) span);
+                if (span instanceof ClickableSpan) {
+                    return ClickableSpanWithText.ofSpan(textView, (ClickableSpan) span);
                 }
             }
-            // No URLSpan found under the touched location.
+            // No ClickableSpan found under the touched location.
             return null;
 
         } else {
@@ -271,14 +271,14 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     /**
      * Adds a highlight background color span to the TextView.
      */
-    protected void highlightURL(TextView textView, URLSpan urlSpan, Spannable text) {
+    protected void highlightURL(TextView textView, ClickableSpanWithText spanWithText, Spannable text) {
         if (isUrlHighlighted) {
             return;
         }
         isUrlHighlighted = true;
 
-        final int spanStart = text.getSpanStart(urlSpan);
-        final int spanEnd = text.getSpanEnd(urlSpan);
+        final int spanStart = text.getSpanStart(spanWithText.span());
+        final int spanEnd = text.getSpanEnd(spanWithText.span());
         text.setSpan(new BackgroundColorSpan(textView.getHighlightColor()), spanStart, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         textView.setText(text);
 
@@ -306,13 +306,41 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         Selection.removeSelection(text);
     }
 
-    protected void dispatchUrlClick(TextView textView, URLSpan span) {
-        final String spanUrl = span.getURL();
+    protected void dispatchUrlClick(TextView textView, ClickableSpanWithText spanWithText) {
+        final String spanUrl = spanWithText.text();
         boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, spanUrl);
         if (!handled) {
             // Let Android handle this click.
-            span.onClick(textView);
+            spanWithText.span().onClick(textView);
         }
     }
 
+    /**
+     * A wrapper with a clickable span and its text.
+     */
+    static class ClickableSpanWithText {
+        private ClickableSpan span;
+        private String text;
+
+        static final ClickableSpanWithText ofSpan(TextView textView, ClickableSpan span) {
+            Spanned s = (Spanned) textView.getText();
+            int start = s.getSpanStart(span);
+            int end = s.getSpanEnd(span);
+            String text = s.subSequence(start, end).toString();
+            return new ClickableSpanWithText(span, text);
+        }
+
+        private ClickableSpanWithText(ClickableSpan span, String text) {
+            this.span = span;
+            this.text = text;
+        }
+
+        ClickableSpan span() {
+            return span;
+        }
+
+        String text() {
+            return text;
+        }
+    }
 }
