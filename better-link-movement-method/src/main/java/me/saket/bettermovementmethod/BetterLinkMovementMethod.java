@@ -35,17 +35,17 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
 
     private OnLinkClickListener onLinkClickListener;
     private final RectF touchedLineBounds = new RectF();
-    private boolean isUrlHighlighted;
+    private boolean isURLHighlighted;
     private boolean touchStartedOverLink;
     private int activeTextViewHashcode;
 
     public interface OnLinkClickListener {
         /**
          * @param textView The TextView on which the URL was clicked.
-         * @param url      The clicked URL.
+         * @param URL      The clicked URL.
          * @return True if this click was handled. False to let Android handle the URL.
          */
-        boolean onClick(TextView textView, String url);
+        boolean onClick(TextView textView, String URL);
     }
 
     /**
@@ -193,7 +193,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         if (touchedClickableSpan != null) {
             highlightURL(view, touchedClickableSpan, text);
         } else {
-            removeUrlHighlightColor(view);
+            removeURLHighlightColor(view);
         }
 
         switch (event.getAction()) {
@@ -205,8 +205,8 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
                 // Register a click only if the touch started on an URL. That is, the touch did not start
                 // elsewhere and ended up on an URL.
                 if (touchedClickableSpan != null && touchStartedOverLink) {
-                    dispatchUrlClick(view, touchedClickableSpan);
-                    removeUrlHighlightColor(view);
+                    dispatchURLClick(view, touchedClickableSpan);
+                    removeURLHighlightColor(view);
 
                 }
                 touchStartedOverLink = false;
@@ -273,10 +273,10 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
      * Adds a highlight background color span to the TextView.
      */
     protected void highlightURL(TextView textView, ClickableSpanWithText spanWithText, Spannable text) {
-        if (isUrlHighlighted) {
+        if (isURLHighlighted) {
             return;
         }
-        isUrlHighlighted = true;
+        isURLHighlighted = true;
 
         final int spanStart = text.getSpanStart(spanWithText.span());
         final int spanEnd = text.getSpanEnd(spanWithText.span());
@@ -287,13 +287,13 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     }
 
     /**
-     * Removes the highlight color under the Url.
+     * Removes the highlight color under the URL.
      */
-    protected void removeUrlHighlightColor(TextView textView) {
-        if (!isUrlHighlighted) {
+    protected void removeURLHighlightColor(TextView textView) {
+        if (!isURLHighlighted) {
             return;
         }
-        isUrlHighlighted = false;
+        isURLHighlighted = false;
 
         final Spannable text = (Spannable) textView.getText();
 
@@ -307,9 +307,9 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         Selection.removeSelection(text);
     }
 
-    protected void dispatchUrlClick(TextView textView, ClickableSpanWithText spanWithText) {
-        final String spanUrl = spanWithText.text();
-        boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, spanUrl);
+    protected void dispatchURLClick(TextView textView, ClickableSpanWithText spanWithText) {
+        final String spanURL = spanWithText.text();
+        boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, spanURL);
         if (!handled) {
             // Let Android handle this click.
             spanWithText.span().onClick(textView);
