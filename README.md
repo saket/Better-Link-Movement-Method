@@ -28,9 +28,13 @@ dependencies {
 }
 ```
 
+## Sample
+
+You can download the [sample APK](https://github.com/Saketme/Better-Link-Movement-Method/releases/download/v1.1/BetterLinkMovementMethod-sample.apk) to see `BetterLinkMovementMethod` in action.
+
 ## Usage
 
-BetterLinkMovementMethod can be used in the same way as you’d use a normal LinkMovementMethod.
+BetterLinkMovementMethod is designed to be a drop-in replacement for LinkMovementMethod.
 
 ```java
 TextView textView = (TextView) findViewById(R.id.text1);
@@ -58,6 +62,10 @@ Registering a BetterLinkMovementMethod on a TextView:
 or on infinite TextViews:
 
 `BetterLinkMovementMethod.linkify(Linkify.ALL, textView1, textView2, textView3, ...);`
+
+when used with links inserted using `Html.fromHtml()`:
+
+`BetterLinkMovementMethod.linkifyHtml(textView);`
 
 Adding a click listener:
 
