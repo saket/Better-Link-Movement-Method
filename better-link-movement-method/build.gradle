@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.2"
     resourcePrefix "bettermovementmethod_"
 
     defaultConfig {
@@ -27,20 +27,20 @@ ext {
     artifact = 'better-link-movement-method'
     libraryName = 'BetterLinkMovementMethod'
 
-    libraryDescription = 'A less buggier and customizable LinkMovementMethod for Android'
+    libraryDescription = 'A less buggy and customizable LinkMovementMethod for Android'
 
     siteUrl = 'https://github.com/Saketme/BetterLinkMovementMethod'
     gitUrl = 'https://github.com/Saketme/BetterLinkMovementMethod.git'
 
-    libraryVersion = '1.0'
+    libraryVersion = '1.1'
 
     developerId = 'saketme'
     developerName = 'Saket Narayan'
     developerEmail = 'saket@saket.me'
 
-    licenseName = 'GNU General Public License v3'
-    licenseUrl = 'https://www.gnu.org/licenses/gpl-3.0.en.html'
-    allLicenses = ["GPL-3.0"]
+    licenseName = 'Apache License v2'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0'
+    allLicenses = ["Apache-2.0"]
 }
 
 dependencies {
