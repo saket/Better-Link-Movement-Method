@@ -171,8 +171,8 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     }
 
     private static void addLinks(int linkifyMask, BetterLinkMovementMethod movementMethod, TextView textView) {
+        textView.setMovementMethod(movementMethod);
         if (linkifyMask != LINKIFY_NONE) {
-            textView.setMovementMethod(movementMethod);
             Linkify.addLinks(textView, linkifyMask);
         }
     }
