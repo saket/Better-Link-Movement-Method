@@ -24,13 +24,13 @@ repositories {
 }
 
 dependencies {
-    compile 'me.saket:better-link-movement-method:1.1'
+    compile 'me.saket:better-link-movement-method:1.2'
 }
 ```
 
 ## Sample
 
-You can download the [sample APK](https://github.com/Saketme/Better-Link-Movement-Method/releases/download/v1.1/BetterLinkMovementMethod-sample.apk) to see `BetterLinkMovementMethod` in action.
+You can download the [sample APK](https://github.com/Saketme/Better-Link-Movement-Method/releases/download/v1.2.1/BetterLinkMovementMethod-sample-1.2.apk) to see `BetterLinkMovementMethod` in action.
 
 ## Usage
 
