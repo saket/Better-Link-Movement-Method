@@ -249,7 +249,6 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
                     dispatchUrlClick(view, touchedClickableSpan);
                     removeUrlHighlightColor(view);
                 }
-                touchStartedOverLink = false;
                 cleanUp();
 
                 // Consume this event even if we could not find any spans. Android's TextView implementation
@@ -270,6 +269,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     }
 
     private void cleanUp() {
+        touchStartedOverLink = false;
         longPressDetected = false;
         textViewWhereTouchStarted = null;
         touchedClickableSpan = null;
