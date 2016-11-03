@@ -1,6 +1,7 @@
 package me.saket.bettermovementmethod;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.RectF;
 import android.text.Layout;
 import android.text.Selection;
@@ -11,6 +12,8 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import android.view.GestureDetector;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,11 +36,16 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     private static final int LINKIFY_NONE = -2;
     private static BetterLinkMovementMethod singleInstance;
 
+    private GestureDetector gestureDetector;
     private OnLinkClickListener onLinkClickListener;
+    private OnLinkLongPressListener onLinkLongPressListener;
     private final RectF touchedLineBounds = new RectF();
     private boolean isUrlHighlighted;
     private boolean touchStartedOverLink;
     private int activeTextViewHashcode;
+    private boolean longPressDetected = false;
+    private ClickableSpanWithText touchedClickableSpan;
+    private TextView textViewWhereTouchStarted;
 
     public interface OnLinkClickListener {
         /**
@@ -46,6 +54,15 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
          * @return True if this click was handled. False to let Android handle the URL.
          */
         boolean onClick(TextView textView, String url);
+    }
+
+    public interface OnLinkLongPressListener {
+        /**
+         * @param textView The TextView on which the URL was pressed.
+         * @param url      The clicked URL.
+         * @return True if this long press was handled. False to ignore this long press.
+         */
+        boolean onLongPress(TextView textView, String url);
     }
 
     /**
@@ -153,6 +170,19 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         return this;
     }
 
+    /**
+     * Set a listener that will get called whenever any link is long pressed on the TextView.
+     */
+    public BetterLinkMovementMethod setOnLinkLongPressListener(OnLinkLongPressListener onLinkLongPressListener) {
+        if (this == singleInstance) {
+            throw new UnsupportedOperationException("Setting a long press listener on the instance returned by getInstance() is not supported. " +
+                    "Please use newInstance() or any of the linkify() methods instead.");
+        }
+
+        this.onLinkLongPressListener = onLinkLongPressListener;
+        return this;
+    }
+
 // ======== PUBLIC APIs END ======== //
 
     private static void rAddLinks(int linkifyMask, ViewGroup viewGroup, BetterLinkMovementMethod movementMethod) {
@@ -179,6 +209,8 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
 
     @Override
     public boolean onTouchEvent(TextView view, Spannable text, MotionEvent event) {
+        initGestureDetectorIfNeeded(view.getContext());
+
         if (activeTextViewHashcode != view.hashCode()) {
             // Bug workaround: TextView stops calling onTouchEvent() once any URL is highlighted.
             // A hacky solution is to reset any "autoLink" property set in XML. But we also want
@@ -187,33 +219,48 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
             view.setAutoLinkMask(0);
         }
 
-        final ClickableSpanWithText touchedClickableSpan = findClickableSpanUnderTouch(view, text, event);
+        touchedClickableSpan = findClickableSpanUnderTouch(view, text, event);
 
         // Toggle highlight
-        if (touchedClickableSpan != null) {
-            highlightUrl(view, touchedClickableSpan, text);
-        } else {
-            removeUrlHighlightColor(view);
+        if (!longPressDetected) {
+            if (touchedClickableSpan != null) {
+                highlightUrl(view, touchedClickableSpan, text);
+            } else {
+                removeUrlHighlightColor(view);
+            }
         }
+
+        gestureDetector.onTouchEvent(event);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 touchStartedOverLink = touchedClickableSpan != null;
+                longPressDetected = false;
+                if (touchStartedOverLink) {
+                    textViewWhereTouchStarted = view;
+                }
                 return true;
 
             case MotionEvent.ACTION_UP:
                 // Register a click only if the touch started on an URL. That is, the touch did not start
                 // elsewhere and ended up on an URL.
-                if (touchedClickableSpan != null && touchStartedOverLink) {
+                // Click will not be registered if a long press was handled already.
+                if (touchedClickableSpan != null && touchStartedOverLink && !longPressDetected) {
                     dispatchUrlClick(view, touchedClickableSpan);
                     removeUrlHighlightColor(view);
-
                 }
                 touchStartedOverLink = false;
+                textViewWhereTouchStarted = null;
+                touchedClickableSpan = null;
 
                 // Consume this event even if we could not find any spans. Android's TextView implementation
                 // has a bug where links get clicked even when there is no more text next to the link and the
                 // touch lies outside its bounds in the same direction.
+                return true;
+
+            case MotionEvent.ACTION_CANCEL:
+                textViewWhereTouchStarted = null;
+                touchedClickableSpan = null;
                 return true;
 
             case MotionEvent.ACTION_MOVE:
@@ -221,6 +268,25 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
 
             default:
                 return false;
+        }
+    }
+
+    private void initGestureDetectorIfNeeded(Context context) {
+        if (gestureDetector == null) {
+            gestureDetector = new GestureDetector(context,
+                    new GestureDetector.SimpleOnGestureListener() {
+
+                        @Override
+                        public void onLongPress(MotionEvent e) {
+                            if (touchedClickableSpan != null && touchStartedOverLink &&
+                                    textViewWhereTouchStarted != null && onLinkLongPressListener != null &&
+                                    dispatchUrlLongPress(textViewWhereTouchStarted, touchedClickableSpan)) {
+                                longPressDetected = true;
+                                textViewWhereTouchStarted.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                                removeUrlHighlightColor(textViewWhereTouchStarted);
+                            }
+                        }
+                    });
         }
     }
 
@@ -314,6 +380,14 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
             // Let Android handle this click.
             spanWithText.span().onClick(textView);
         }
+    }
+
+    protected boolean dispatchUrlLongPress(TextView textView, ClickableSpanWithText spanWithText) {
+        if (onLinkLongPressListener != null) {
+            final String spanUrl = spanWithText.text();
+            return onLinkLongPressListener.onLongPress(textView, spanUrl);
+        }
+        return false;
     }
 
     /**
