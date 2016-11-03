@@ -223,7 +223,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
 
         // Toggle highlight
         if (!longPressDetected) {
-            if (touchedClickableSpan != null) {
+            if (touchedClickableSpan != null && !isFinishingEvent(event)) {
                 highlightUrl(view, touchedClickableSpan, text);
             } else {
                 removeUrlHighlightColor(view);
@@ -267,6 +267,16 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
                 return false;
         }
     }
+
+	private boolean isFinishingEvent(MotionEvent event) {
+		switch (event.getAction()) {
+			case MotionEvent.ACTION_UP:
+			case MotionEvent.ACTION_CANCEL:
+				return true;
+			default:
+				return false;
+		}
+	}
 
     private void cleanUp() {
         touchStartedOverLink = false;
