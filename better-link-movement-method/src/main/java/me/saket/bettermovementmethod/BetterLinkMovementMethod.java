@@ -273,7 +273,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
 
     private void initGestureDetectorIfNeeded(Context context) {
         if (gestureDetector == null) {
-            gestureDetector = new GestureDetector(context,
+            gestureDetector = new GestureDetector(context.getApplicationContext(),
                     new GestureDetector.SimpleOnGestureListener() {
 
                         @Override
