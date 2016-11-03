@@ -250,8 +250,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
                     removeUrlHighlightColor(view);
                 }
                 touchStartedOverLink = false;
-                textViewWhereTouchStarted = null;
-                touchedClickableSpan = null;
+                cleanUp();
 
                 // Consume this event even if we could not find any spans. Android's TextView implementation
                 // has a bug where links get clicked even when there is no more text next to the link and the
@@ -259,8 +258,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
                 return true;
 
             case MotionEvent.ACTION_CANCEL:
-                textViewWhereTouchStarted = null;
-                touchedClickableSpan = null;
+                cleanUp();
                 return true;
 
             case MotionEvent.ACTION_MOVE:
@@ -269,6 +267,12 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
             default:
                 return false;
         }
+    }
+
+    private void cleanUp() {
+        longPressDetected = false;
+        textViewWhereTouchStarted = null;
+        touchedClickableSpan = null;
     }
 
     private void initGestureDetectorIfNeeded(Context context) {
