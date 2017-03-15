@@ -30,8 +30,8 @@ import android.widget.TextView;
 public class BetterLinkMovementMethod extends LinkMovementMethod {
 
     private static final Class SPAN_CLASS = ClickableSpan.class;
-    private static final int LINKIFY_NONE = -2;
     private static BetterLinkMovementMethod singleInstance;
+    private static final int LINKIFY_NONE = -2;
 
     private OnLinkClickListener onLinkClickListener;
     private final RectF touchedLineBounds = new RectF();
