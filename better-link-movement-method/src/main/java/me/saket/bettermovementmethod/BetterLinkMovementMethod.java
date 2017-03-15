@@ -199,7 +199,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 touchStartedOverLink = touchedClickableSpan != null;
-                return true;
+                return touchStartedOverLink;
 
             case MotionEvent.ACTION_UP:
                 // Register a click only if the touch started on an URL. That is, the touch did not start
@@ -207,17 +207,17 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
                 if (touchedClickableSpan != null && touchStartedOverLink) {
                     dispatchUrlClick(view, touchedClickableSpan);
                     removeUrlHighlightColor(view);
-
                 }
+                boolean didTouchStartOverLink = touchStartedOverLink;
                 touchStartedOverLink = false;
 
                 // Consume this event even if we could not find any spans. Android's TextView implementation
                 // has a bug where links get clicked even when there is no more text next to the link and the
                 // touch lies outside its bounds in the same direction.
-                return true;
+                return didTouchStartOverLink;
 
             case MotionEvent.ACTION_MOVE:
-                return true;
+                return touchStartedOverLink;
 
             default:
                 return false;
