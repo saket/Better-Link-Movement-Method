@@ -137,7 +137,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         return singleInstance;
     }
 
-    private BetterLinkMovementMethod() {
+    protected BetterLinkMovementMethod() {
     }
 
     /**
@@ -319,7 +319,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     /**
      * A wrapper with a clickable span and its text.
      */
-    static class ClickableSpanWithText {
+    protected static class ClickableSpanWithText {
 
         private ClickableSpan span;
         private String text;
