@@ -14,8 +14,8 @@ android {
         applicationId 'me.saket.betterlinkmovement.sample'
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 3
-        versionName "1.3"
+        versionCode 4
+        versionName "2"
     }
     buildTypes {
         release {
