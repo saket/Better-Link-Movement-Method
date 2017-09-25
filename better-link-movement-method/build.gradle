@@ -1,16 +1,17 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
     resourcePrefix "bettermovementmethod_"
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 25
-        versionCode 3
-        versionName "2"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode versions.libraryVersionCode
+        versionName versions.libraryVersionName
     }
+    
     buildTypes {
         release {
             minifyEnabled false
@@ -26,13 +27,12 @@ ext {
     publishedGroupId = 'me.saket'
     artifact = 'better-link-movement-method'
     libraryName = 'BetterLinkMovementMethod'
+    libraryVersion = versions.libraryVersionName
 
     libraryDescription = 'A less buggy and customizable LinkMovementMethod for Android'
 
     siteUrl = 'https://github.com/Saketme/BetterLinkMovementMethod'
     gitUrl = 'https://github.com/Saketme/BetterLinkMovementMethod.git'
-
-    libraryVersion = '2'
 
     developerId = 'saketme'
     developerName = 'Saket Narayan'

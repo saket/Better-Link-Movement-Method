@@ -8,14 +8,14 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
     defaultConfig {
         applicationId 'me.saket.betterlinkmovement.sample'
-        minSdkVersion 21
-        targetSdkVersion 25
-        versionCode 4
-        versionName "2"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode versions.libraryVersionCode
+        versionName versions.libraryVersionName
     }
     buildTypes {
         release {
