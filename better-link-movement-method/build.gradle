@@ -1,46 +1,46 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
-    resourcePrefix "bettermovementmethod_"
+  compileSdkVersion versions.compileSdk
+  buildToolsVersion versions.buildTools
+  resourcePrefix "bettermovementmethod_"
 
-    defaultConfig {
-        minSdkVersion versions.minSdk
-        targetSdkVersion versions.targetSdk
-        versionCode versions.libraryVersionCode
-        versionName versions.libraryVersionName
+  defaultConfig {
+    minSdkVersion versions.minSdk
+    targetSdkVersion versions.targetSdk
+    versionCode versions.libraryVersionCode
+    versionName versions.libraryVersionName
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
-    
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+  }
 }
 
 ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'better-link-movement-method'
+  bintrayRepo = 'maven'
+  bintrayName = 'better-link-movement-method'
 
-    publishedGroupId = 'me.saket'
-    artifact = 'better-link-movement-method'
-    libraryName = 'BetterLinkMovementMethod'
-    libraryVersion = versions.libraryVersionName
+  publishedGroupId = 'me.saket'
+  artifact = 'better-link-movement-method'
+  libraryName = 'BetterLinkMovementMethod'
+  libraryVersion = versions.libraryVersionName
 
-    libraryDescription = 'A less buggy and customizable LinkMovementMethod for Android'
+  libraryDescription = 'A less buggy and customizable LinkMovementMethod for Android'
 
-    siteUrl = 'https://github.com/Saketme/BetterLinkMovementMethod'
-    gitUrl = 'https://github.com/Saketme/BetterLinkMovementMethod.git'
+  siteUrl = 'https://github.com/Saketme/BetterLinkMovementMethod'
+  gitUrl = 'https://github.com/Saketme/BetterLinkMovementMethod.git'
 
-    developerId = 'saketme'
-    developerName = 'Saket Narayan'
-    developerEmail = 'saket@saket.me'
+  developerId = 'saketme'
+  developerName = 'Saket Narayan'
+  developerEmail = 'saket@saket.me'
 
-    licenseName = 'Apache License v2'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0'
-    allLicenses = ["Apache-2.0"]
+  licenseName = 'Apache License v2'
+  licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0'
+  allLicenses = ["Apache-2.0"]
 }
 
 dependencies {

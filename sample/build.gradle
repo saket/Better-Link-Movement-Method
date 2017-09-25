@@ -1,36 +1,36 @@
 plugins {
-    id "me.tatarka.retrolambda" version "3.2.5"
+  id "me.tatarka.retrolambda" version "3.2.5"
 }
 apply plugin: 'com.android.application'
 
 repositories {
-    jcenter()
+  jcenter()
 }
 
 android {
-    compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
-    defaultConfig {
-        applicationId 'me.saket.betterlinkmovement.sample'
-        minSdkVersion versions.minSdk
-        targetSdkVersion versions.targetSdk
-        versionCode versions.libraryVersionCode
-        versionName versions.libraryVersionName
+  compileSdkVersion versions.compileSdk
+  buildToolsVersion versions.buildTools
+  defaultConfig {
+    applicationId 'me.saket.betterlinkmovement.sample'
+    minSdkVersion versions.minSdk
+    targetSdkVersion versions.targetSdk
+    versionCode versions.libraryVersionCode
+    versionName versions.libraryVersionName
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
-    productFlavors {
-    }
+  }
+  compileOptions {
+    targetCompatibility 1.8
+    sourceCompatibility 1.8
+  }
+  productFlavors {
+  }
 }
 
 dependencies {
-    compile project(path: ':better-link-movement-method')
+  compile project(path: ':better-link-movement-method')
 }

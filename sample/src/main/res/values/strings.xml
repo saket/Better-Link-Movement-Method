@@ -1,9 +1,9 @@
 <resources>
-    <string name="bettermovementmethod_app_name">BetterLinkMovement</string>
-    <string name="bettermovementmethod_dummy_text_long"><![CDATA[
+  <string name="bettermovementmethod_app_name">BetterLinkMovement</string>
+  <string name="bettermovementmethod_dummy_text_long"><![CDATA[
 <a href="https://en.wikipedia.org/wiki/Gotham_City">Gotham</a> has been good to our family, but the city\u2019s been suffering. People less fortunate
 than us have been enduring very hard times. So we built a new, cheap, public transportation system to unite the city. And at the center,
 <a href="http://batman.wikia.com/wiki/Wayne_Tower_(Nolan_Films)">Wayne tower</a>.
     ]]></string>
-    <string name="bettermovementmethod_dummy_number">7899859911</string>
+  <string name="bettermovementmethod_dummy_number">7899859911</string>
 </resources>
