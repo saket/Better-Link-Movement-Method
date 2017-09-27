@@ -30,7 +30,7 @@ dependencies {
 
 ## Sample
 
-You can download the [sample APK](https://github.com/Saketme/Better-Link-Movement-Method/releases/download/v1.2.1/BetterLinkMovementMethod-sample-1.2.apk) to see `BetterLinkMovementMethod` in action.
+You can find sample APKs on the [releases page](https://github.com/Saketme/Better-Link-Movement-Method/releases) to see `BetterLinkMovementMethod` in action.
 
 ## Usage
 
@@ -45,45 +45,39 @@ Linkify.addLinks(textView, Linkify.PHONE_NUMBERS);
 However, the easiest way to get started is by using one of its linkify() methods:
 
 ```java
-BetterLinkMovementMethod.linkify(int linkifyMask, Activity);
-BetterLinkMovementMethod.linkify(int linkifyMask, ViewGroup);
 BetterLinkMovementMethod.linkify(int linkifyMask, TextView...);
+BetterLinkMovementMethod.linkify(int linkifyMask, ViewGroup);
+BetterLinkMovementMethod.linkify(int linkifyMask, Activity);
 
-// Where linkifyMask can be one of Linkify.ALL, Linkify.PHONE_NUMBERS, 
+// Where linkifyMask can be one of Linkify.ALL, Linkify.PHONE_NUMBERS,
 // Linkify.MAP_ADDRESSES, Linkify.WEB_URLS and Linkify.EMAIL_ADDRESSES.
 ```
 
 ## Examples
 
-Registering a BetterLinkMovementMethod on a TextView:
-
-`BetterLinkMovementMethod.linkify(Linkify.ALL, textView);`
-
-or on infinite TextViews:
-
-`BetterLinkMovementMethod.linkify(Linkify.ALL, textView1, textView2, textView3, ...);`
-
-when used with links inserted using `Html.fromHtml()`:
-
-`BetterLinkMovementMethod.linkifyHtml(textView);`
-
-Adding a click listener:
-
 ```java
-BetterLinkMovementMethod method = BetterLinkMovementMethod.linkify(Linkify.ALL, this);
+BetterLinkMovementMethod method = BetterLinkMovementMethod.linkify(Linkify.ALL, textView);
 method.setOnLinkClickListener((textView, url) -> {
-    // Do something with the URL and return true to indicate that this URL was handled.
-    // Otherwise, return false to let the framework handle the URL.
-    return true;
+  // Do something with the URL and return true to indicate that this URL was handled.
+  // Otherwise, return false to let the framework handle the URL.
+  return true;
 });
- 
+method.setOnLinkLongClickListener((textView, url) -> {
+  // Handle long-clicks.
+  return true;
+});
+
 // Or the less verbose way
 BetterLinkMovementMethod
-        .linkify(Linkify.ALL, this)
-        .setOnLinkClickListener((textView, url) -> {
-            // Do something.
-            return true;
-        });
+    .linkify(Linkify.ALL, textView)
+    .setOnLinkClickListener((textView, url) -> {
+      // Handle clicks.
+      return true;
+    })
+    .setOnLinkLongClickListener((textView, url) -> {
+      // Handle long-clicks.
+      return true;
+    });
 ```
 
 You can also choose to go the shorter route of registering BetterLinkMovementMethod on all TextViews in your Activity’s layout in one go:
@@ -91,10 +85,10 @@ You can also choose to go the shorter route of registering BetterLinkMovementMet
 ```java
 @Override
 protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
- 
-    BetterLinkMovementMethod.linkify(Linkify.ALL, this);
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.activity_main);
+
+  BetterLinkMovementMethod.linkify(Linkify.ALL, this);
 }
 ```
 
@@ -104,22 +98,22 @@ When using in a non-Activity context (e.g., Fragments), you can also pass a View
 @Nullable
 @Override
 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.your_fragment, container, false);
- 
-    BetterLinkMovementMethod.linkify(Linkify.ALL, ((ViewGroup) view));
- 
-    return view;
+  View view = inflater.inflate(R.layout.your_fragment, container, false);
+
+  BetterLinkMovementMethod.linkify(Linkify.ALL, ((ViewGroup) view));
+
+  return view;
 }
 ```
 
 ## Contributions
 
-If you think that the APIs or the implementation can be improved, please feel free to raise a pull-request. 
+If you think that the APIs or the implementation can be improved, please feel free to raise a pull-request.
 
 ## License
 
 ```
-Copyright 2016 Saket Narayan.
+Copyright 2017 Saket Narayan.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

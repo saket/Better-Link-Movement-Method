@@ -33,9 +33,14 @@ public class MainActivity extends Activity {
 
       return true;
     };
-    BetterLinkMovementMethod.linkify(Linkify.ALL, this).setOnLinkClickListener(urlClickListener);
+    BetterLinkMovementMethod.linkify(Linkify.ALL, this)
+        .setOnLinkClickListener(urlClickListener)
+        .setOnLinkLongClickListener((textView, url) -> {
+          Toast.makeText(this, "Long-click: " + url, Toast.LENGTH_SHORT).show();
+          return true;
+        });
 
-    TextView gothamTextView = (TextView) findViewById(android.R.id.text1);
+    TextView gothamTextView = findViewById(android.R.id.text1);
     gothamTextView.setText(Html.fromHtml(getString(R.string.bettermovementmethod_dummy_text_long)));
     BetterLinkMovementMethod.linkifyHtml(gothamTextView).setOnLinkClickListener(urlClickListener);
   }
@@ -51,5 +56,4 @@ public class MainActivity extends Activity {
   private boolean isMapAddress(String url) {
     return url.contains("goo.gl/maps");
   }
-
 }

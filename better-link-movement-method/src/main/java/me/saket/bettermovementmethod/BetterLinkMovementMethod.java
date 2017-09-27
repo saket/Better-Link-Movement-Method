@@ -11,8 +11,10 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
@@ -22,30 +24,41 @@ import android.widget.TextView;
  * <p>
  * <ul>
  * <li>Reliably applies a highlight color on links when they're touched.</li>
- * <li>Let's you handle URL clicks</li>
- * <li>Correctly identifies touched URLs (Unlike the default implementation where a click is registered even if it's
+ * <li>Let's you handle single and long clicks on URLs</li>
+ * <li>Correctly identifies focused URLs (Unlike the default implementation where a click is registered even if it's
  * made outside of the URL's bounds if there is no more text in that direction.)</li>
  * </ul>
  */
 public class BetterLinkMovementMethod extends LinkMovementMethod {
 
-  private static final Class SPAN_CLASS = ClickableSpan.class;
   private static BetterLinkMovementMethod singleInstance;
   private static final int LINKIFY_NONE = -2;
 
   private OnLinkClickListener onLinkClickListener;
+  private OnLinkLongClickListener onLinkLongClickListener;
   private final RectF touchedLineBounds = new RectF();
   private boolean isUrlHighlighted;
-  private boolean touchStartedOverLink;
+  private ClickableSpan clickableSpanUnderTouchOnActionDown;
   private int activeTextViewHashcode;
+  private LongPressTimer ongoingLongPressTimer;
+  private boolean wasLongPressRegistered;
 
   public interface OnLinkClickListener {
     /**
-     * @param textView The TextView on which the URL was clicked.
+     * @param textView The TextView on which a click was registered.
      * @param url      The clicked URL.
      * @return True if this click was handled. False to let Android handle the URL.
      */
     boolean onClick(TextView textView, String url);
+  }
+
+  public interface OnLinkLongClickListener {
+    /**
+     * @param textView The TextView on which a long-click was registered.
+     * @param url      The long-clicked URL.
+     * @return True if this long-click was handled. False to let Android handle the URL (as a short-click).
+     */
+    boolean onLongClick(TextView textView, String url);
   }
 
   /**
@@ -143,13 +156,26 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
   /**
    * Set a listener that will get called whenever any link is clicked on the TextView.
    */
-  public BetterLinkMovementMethod setOnLinkClickListener(OnLinkClickListener onLinkClickListener) {
+  public BetterLinkMovementMethod setOnLinkClickListener(OnLinkClickListener clickListener) {
     if (this == singleInstance) {
-      throw new UnsupportedOperationException("Setting a click listener on the instance returned by getInstance() is not supported. " +
-          "Please use newInstance() or any of the linkify() methods instead.");
+      throw new UnsupportedOperationException("Setting a click listener on the instance returned by getInstance() is not supported to avoid memory " +
+          "leaks. Please use newInstance() or any of the linkify() methods instead.");
     }
 
-    this.onLinkClickListener = onLinkClickListener;
+    this.onLinkClickListener = clickListener;
+    return this;
+  }
+
+  /**
+   * Set a listener that will get called whenever any link is clicked on the TextView.
+   */
+  public BetterLinkMovementMethod setOnLinkLongClickListener(OnLinkLongClickListener longClickListener) {
+    if (this == singleInstance) {
+      throw new UnsupportedOperationException("Setting a long-click listener on the instance returned by getInstance() is not supported to avoid " +
+          "memory leaks. Please use newInstance() or any of the linkify() methods instead.");
+    }
+
+    this.onLinkLongClickListener = longClickListener;
     return this;
   }
 
@@ -178,50 +204,82 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
   }
 
   @Override
-  public boolean onTouchEvent(TextView view, Spannable text, MotionEvent event) {
-    if (activeTextViewHashcode != view.hashCode()) {
+  public boolean onTouchEvent(final TextView textView, Spannable text, MotionEvent event) {
+    if (activeTextViewHashcode != textView.hashCode()) {
       // Bug workaround: TextView stops calling onTouchEvent() once any URL is highlighted.
       // A hacky solution is to reset any "autoLink" property set in XML. But we also want
       // to do this once per TextView.
-      activeTextViewHashcode = view.hashCode();
-      view.setAutoLinkMask(0);
+      activeTextViewHashcode = textView.hashCode();
+      textView.setAutoLinkMask(0);
     }
 
-    final ClickableSpanWithText touchedClickableSpan = findClickableSpanUnderTouch(view, text, event);
-
-    // Toggle highlight
-    if (touchedClickableSpan != null) {
-      highlightUrl(view, touchedClickableSpan, text);
-    } else {
-      removeUrlHighlightColor(view);
-    }
+    final ClickableSpan clickableSpanUnderTouch = findClickableSpanUnderTouch(textView, text, event);
+    final boolean touchStartedOverALink = clickableSpanUnderTouchOnActionDown != null;
 
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        touchStartedOverLink = touchedClickableSpan != null;
-        return touchStartedOverLink;
+        if (clickableSpanUnderTouch != null) {
+          highlightUrl(textView, clickableSpanUnderTouch, text);
+        }
+
+        if (touchStartedOverALink && onLinkLongClickListener != null) {
+          LongPressTimer.OnTimerReachedListener longClickListener = new LongPressTimer.OnTimerReachedListener() {
+            @Override
+            public void onTimerReached() {
+              wasLongPressRegistered = true;
+              textView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+              removeUrlHighlightColor(textView);
+              dispatchUrlLongClick(textView, clickableSpanUnderTouch);
+            }
+          };
+          startTimerForRegisteringLongClick(textView, longClickListener);
+        }
+
+        clickableSpanUnderTouchOnActionDown = clickableSpanUnderTouch;
+        return touchStartedOverALink;
 
       case MotionEvent.ACTION_UP:
-        // Register a click only if the touch started on an URL. That is, the touch did not start
-        // elsewhere and ended up on an URL.
-        if (touchedClickableSpan != null && touchStartedOverLink) {
-          dispatchUrlClick(view, touchedClickableSpan);
-          removeUrlHighlightColor(view);
+        // Register a click only if the touch started and ended on the same URL.
+        if (!wasLongPressRegistered && touchStartedOverALink && clickableSpanUnderTouch == clickableSpanUnderTouchOnActionDown) {
+          dispatchUrlClick(textView, clickableSpanUnderTouch);
         }
-        boolean didTouchStartOverLink = touchStartedOverLink;
-        touchStartedOverLink = false;
+        cleanupOnTouchUp(textView);
 
-        // Consume this event even if we could not find any spans. Android's TextView implementation
-        // has a bug where links get clicked even when there is no more text next to the link and the
-        // touch lies outside its bounds in the same direction.
-        return didTouchStartOverLink;
+        // Consume this event even if we could not find any spans to avoid letting Android handle this event.
+        // Android's TextView implementation has a bug where links get clicked even when there is no more text
+        // next to the link and the touch lies outside its bounds in the same direction.
+        return touchStartedOverALink;
+
+      case MotionEvent.ACTION_CANCEL:
+        cleanupOnTouchUp(textView);
+        return false;
 
       case MotionEvent.ACTION_MOVE:
-        return touchStartedOverLink;
+        // Stop listening for a long-press as soon as the user wanders off to unknown lands.
+        if (clickableSpanUnderTouch != clickableSpanUnderTouchOnActionDown) {
+          removeLongPressCallback(textView);
+        }
+
+        if (!wasLongPressRegistered) {
+          // Toggle highlight.
+          if (clickableSpanUnderTouch != null) {
+            highlightUrl(textView, clickableSpanUnderTouch, text);
+          } else {
+            removeUrlHighlightColor(textView);
+          }
+        }
+
+        return touchStartedOverALink;
 
       default:
         return false;
     }
+  }
+
+  private void cleanupOnTouchUp(TextView textView) {
+    wasLongPressRegistered = false;
+    removeUrlHighlightColor(textView);
+    removeLongPressCallback(textView);
   }
 
   /**
@@ -229,7 +287,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
    *
    * @return The touched ClickableSpan or null.
    */
-  protected ClickableSpanWithText findClickableSpanUnderTouch(TextView textView, Spannable text, MotionEvent event) {
+  protected ClickableSpan findClickableSpanUnderTouch(TextView textView, Spannable text, MotionEvent event) {
     // So we need to find the location in text where touch was made, regardless of whether the TextView
     // has scrollable text. That is, not the entire text is currently visible.
     int touchX = (int) event.getX();
@@ -253,11 +311,11 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     touchedLineBounds.bottom = layout.getLineBottom(touchedLine);
 
     if (touchedLineBounds.contains(touchX, touchY)) {
-      // Find any ClickableSpan that lies under the touched area
-      final Object[] spans = text.getSpans(touchOffset, touchOffset, SPAN_CLASS);
+      // Find a ClickableSpan that lies under the touched area.
+      final Object[] spans = text.getSpans(touchOffset, touchOffset, ClickableSpan.class);
       for (final Object span : spans) {
         if (span instanceof ClickableSpan) {
-          return ClickableSpanWithText.ofSpan(textView, (ClickableSpan) span);
+          return (ClickableSpan) span;
         }
       }
       // No ClickableSpan found under the touched location.
@@ -270,16 +328,16 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
   }
 
   /**
-   * Adds a highlight background color span to the TextView.
+   * Adds a background color span at <var>clickableSpan</var>'s location.
    */
-  protected void highlightUrl(TextView textView, ClickableSpanWithText spanWithText, Spannable text) {
+  protected void highlightUrl(TextView textView, ClickableSpan clickableSpan, Spannable text) {
     if (isUrlHighlighted) {
       return;
     }
     isUrlHighlighted = true;
 
-    final int spanStart = text.getSpanStart(spanWithText.span());
-    final int spanEnd = text.getSpanEnd(spanWithText.span());
+    final int spanStart = text.getSpanStart(clickableSpan);
+    final int spanEnd = text.getSpanEnd(clickableSpan);
     text.setSpan(new BackgroundColorSpan(textView.getHighlightColor()), spanStart, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
     textView.setText(text);
 
@@ -307,24 +365,67 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     Selection.removeSelection(text);
   }
 
-  protected void dispatchUrlClick(TextView textView, ClickableSpanWithText spanWithText) {
-    final String spanUrl = spanWithText.text();
-    boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, spanUrl);
+  protected void startTimerForRegisteringLongClick(TextView textView, LongPressTimer.OnTimerReachedListener longClickListener) {
+    ongoingLongPressTimer = new LongPressTimer();
+    ongoingLongPressTimer.setOnTimerReachedListener(longClickListener);
+    textView.postDelayed(ongoingLongPressTimer, ViewConfiguration.getLongPressTimeout());
+  }
+
+  /**
+   * Remove the long-press detection timer.
+   */
+  protected void removeLongPressCallback(TextView textView) {
+    if (ongoingLongPressTimer != null) {
+      textView.removeCallbacks(ongoingLongPressTimer);
+      ongoingLongPressTimer = null;
+    }
+  }
+
+  protected void dispatchUrlClick(TextView textView, ClickableSpan clickableSpan) {
+    ClickableSpanWithText clickableSpanWithText = ClickableSpanWithText.ofSpan(textView, clickableSpan);
+    boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, clickableSpanWithText.text());
+
     if (!handled) {
       // Let Android handle this click.
-      spanWithText.span().onClick(textView);
+      clickableSpanWithText.span().onClick(textView);
+    }
+  }
+
+  protected void dispatchUrlLongClick(TextView textView, ClickableSpan clickableSpan) {
+    ClickableSpanWithText clickableSpanWithText = ClickableSpanWithText.ofSpan(textView, clickableSpan);
+    boolean handled = onLinkLongClickListener != null && onLinkLongClickListener.onLongClick(textView, clickableSpanWithText.text());
+
+    if (!handled) {
+      // Let Android handle this long click as a short-click.
+      clickableSpanWithText.span().onClick(textView);
+    }
+  }
+
+  protected static final class LongPressTimer implements Runnable {
+    private OnTimerReachedListener onTimerReachedListener;
+
+    interface OnTimerReachedListener {
+      void onTimerReached();
+    }
+
+    @Override
+    public void run() {
+      onTimerReachedListener.onTimerReached();
+    }
+
+    public void setOnTimerReachedListener(OnTimerReachedListener listener) {
+      onTimerReachedListener = listener;
     }
   }
 
   /**
-   * A wrapper with a clickable span and its text.
+   * A wrapper to support all {@link ClickableSpan}s that may or may not provide URLs.
    */
   protected static class ClickableSpanWithText {
-
     private ClickableSpan span;
     private String text;
 
-    static ClickableSpanWithText ofSpan(TextView textView, ClickableSpan span) {
+    protected static ClickableSpanWithText ofSpan(TextView textView, ClickableSpan span) {
       Spanned s = (Spanned) textView.getText();
       String text;
       if (span instanceof URLSpan) {
@@ -349,7 +450,5 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     String text() {
       return text;
     }
-
   }
-
 }
