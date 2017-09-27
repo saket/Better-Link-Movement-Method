@@ -5,8 +5,8 @@ buildscript {
       'buildTools'        : '26.0.1',
       'minSdk'            : 16,
       'targetSdk'         : 26,
-      'libraryVersionName': '2',
-      'libraryVersionCode': 4,
+      'libraryVersionName': '2.1.0',
+      'libraryVersionCode': 5,
   ]
 
   repositories {
