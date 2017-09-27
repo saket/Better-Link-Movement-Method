@@ -12,7 +12,7 @@ android {
   buildToolsVersion versions.buildTools
   defaultConfig {
     applicationId 'me.saket.betterlinkmovement.sample'
-    minSdkVersion versions.minSdk
+    minSdkVersion 21
     targetSdkVersion versions.targetSdk
     versionCode versions.libraryVersionCode
     versionName versions.libraryVersionName

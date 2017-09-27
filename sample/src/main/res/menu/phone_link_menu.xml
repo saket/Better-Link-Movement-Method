@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  tools:ignore="HardcodedText">
+  <item
+    android:id="@+id/action_call"
+    android:title="Call" />
+
+  <item
+    android:id="@+id/action_sms"
+    android:title="Send message" />
+
+  <item
+    android:id="@+id/action_copy"
+    android:title="Copy number" />
+
+  <item
+    android:id="@+id/action_save"
+    android:title="Save to contacts" />
+</menu>

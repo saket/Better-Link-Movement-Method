@@ -6,10 +6,9 @@ import android.text.Html;
 import android.text.util.Linkify;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import me.saket.bettermovementmethod.BetterLinkMovementMethod;
+import me.saket.bettermovementmethod.BetterLinkMovementMethod.OnLinkLongClickListener;
 
-@SuppressWarnings("deprecation")
 public class MainActivity extends Activity {
 
   @Override
@@ -17,36 +16,45 @@ public class MainActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    BetterLinkMovementMethod.OnLinkClickListener urlClickListener = (view, url) -> {
-      if (isPhoneNumber(url)) {
-        FloatingMenuPhone.show(this, view, url);
-
-      } else if (isEmailAddress(url)) {
-        EmailFloatingMenu.show(this, view, url);
-
-      } else if (isMapAddress(url)) {
-        MapFloatingMenu.show(this, view, url);
-
-      } else {
-        Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
-      }
-
-      return true;
-    };
+    // Add links to all TextViews.
     BetterLinkMovementMethod.linkify(Linkify.ALL, this)
         .setOnLinkClickListener(urlClickListener)
-        .setOnLinkLongClickListener((textView, url) -> {
-          Toast.makeText(this, "Long-click: " + url, Toast.LENGTH_SHORT).show();
-          return true;
-        });
+        .setOnLinkLongClickListener(longClickListener);
 
-    TextView gothamTextView = findViewById(android.R.id.text1);
-    gothamTextView.setText(Html.fromHtml(getString(R.string.bettermovementmethod_dummy_text_long)));
-    BetterLinkMovementMethod.linkifyHtml(gothamTextView).setOnLinkClickListener(urlClickListener);
+    TextView wayneTowerIntroView = findViewById(R.id.wayne_tower_intro);
+    wayneTowerIntroView.setText(Html.fromHtml(getString(R.string.bettermovementmethod_dummy_text_long)));
+    BetterLinkMovementMethod.linkifyHtml(wayneTowerIntroView)
+        .setOnLinkClickListener(urlClickListener)
+        .setOnLinkLongClickListener(longClickListener);
   }
 
+  private final BetterLinkMovementMethod.OnLinkClickListener urlClickListener = (view, url) -> {
+    if (isPhoneNumber(url)) {
+      PhoneLinkPopupMenu phonePopupMenu = new PhoneLinkPopupMenu(this, view, url);
+      phonePopupMenu.show();
+
+    } else if (isEmailAddress(url)) {
+      EmailLinkPopupMenu emailPopupMenu = new EmailLinkPopupMenu(this, view);
+      emailPopupMenu.show();
+
+    } else if (isMapAddress(url)) {
+      MapLinkPopupMenu mapPopupMenu = new MapLinkPopupMenu(this, view);
+      mapPopupMenu.show();
+
+    } else {
+      Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+    }
+
+    return true;
+  };
+
+  private final OnLinkLongClickListener longClickListener = (textView, url) -> {
+    Toast.makeText(this, "Long-click: " + url, Toast.LENGTH_SHORT).show();
+    return true;
+  };
+
   private boolean isPhoneNumber(String url) {
-    return url.endsWith(getString(R.string.bettermovementmethod_dummy_number));
+    return url.startsWith("tel:");
   }
 
   private boolean isEmailAddress(String url) {
