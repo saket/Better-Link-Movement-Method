@@ -46,5 +46,6 @@ ext {
 dependencies {
 }
 
+// Task for uploading JAR to maven: "./gradlew better-link-movement-method:bintrayUpload".
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
