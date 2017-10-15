@@ -222,7 +222,9 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
           highlightUrl(textView, clickableSpanUnderTouch, text);
         }
 
-        if (touchStartedOverALink && onLinkLongClickListener != null) {
+        if (touchStartedOverALink &&
+                onLinkLongClickListener != null &&
+                clickableSpanUnderTouch != null) {
           LongPressTimer.OnTimerReachedListener longClickListener = new LongPressTimer.OnTimerReachedListener() {
             @Override
             public void onTimerReached() {
