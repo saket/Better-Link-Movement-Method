@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    compile 'me.saket:better-link-movement-method:2'
+    implementation 'me.saket:better-link-movement-method:2.1.0'
 }
 ```
 
