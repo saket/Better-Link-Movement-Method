@@ -217,7 +217,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     if (event.getAction() == MotionEvent.ACTION_DOWN) {
       clickableSpanUnderTouchOnActionDown = clickableSpanUnderTouch;
     }
-    final boolean touchStartedOverALink = clickableSpanUnderTouchOnActionDown != null;
+    final boolean touchStartedOverAClickableSpan = clickableSpanUnderTouchOnActionDown != null;
 
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
@@ -225,7 +225,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
           highlightUrl(textView, clickableSpanUnderTouch, text);
         }
 
-        if (touchStartedOverALink && onLinkLongClickListener != null) {
+        if (touchStartedOverAClickableSpan && onLinkLongClickListener != null) {
           LongPressTimer.OnTimerReachedListener longClickListener = new LongPressTimer.OnTimerReachedListener() {
             @Override
             public void onTimerReached() {
@@ -237,11 +237,11 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
           };
           startTimerForRegisteringLongClick(textView, longClickListener);
         }
-        return touchStartedOverALink;
+        return touchStartedOverAClickableSpan;
 
       case MotionEvent.ACTION_UP:
         // Register a click only if the touch started and ended on the same URL.
-        if (!wasLongPressRegistered && touchStartedOverALink && clickableSpanUnderTouch == clickableSpanUnderTouchOnActionDown) {
+        if (!wasLongPressRegistered && touchStartedOverAClickableSpan && clickableSpanUnderTouch == clickableSpanUnderTouchOnActionDown) {
           dispatchUrlClick(textView, clickableSpanUnderTouch);
         }
         cleanupOnTouchUp(textView);
@@ -249,7 +249,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
         // Consume this event even if we could not find any spans to avoid letting Android handle this event.
         // Android's TextView implementation has a bug where links get clicked even when there is no more text
         // next to the link and the touch lies outside its bounds in the same direction.
-        return touchStartedOverALink;
+        return touchStartedOverAClickableSpan;
 
       case MotionEvent.ACTION_CANCEL:
         cleanupOnTouchUp(textView);
@@ -270,7 +270,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
           }
         }
 
-        return touchStartedOverALink;
+        return touchStartedOverAClickableSpan;
 
       default:
         return false;
