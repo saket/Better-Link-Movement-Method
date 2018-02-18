@@ -214,6 +214,9 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     }
 
     final ClickableSpan clickableSpanUnderTouch = findClickableSpanUnderTouch(textView, text, event);
+    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+      clickableSpanUnderTouchOnActionDown = clickableSpanUnderTouch;
+    }
     final boolean touchStartedOverALink = clickableSpanUnderTouchOnActionDown != null;
 
     switch (event.getAction()) {
@@ -234,8 +237,6 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
           };
           startTimerForRegisteringLongClick(textView, longClickListener);
         }
-
-        clickableSpanUnderTouchOnActionDown = clickableSpanUnderTouch;
         return touchStartedOverALink;
 
       case MotionEvent.ACTION_UP:
@@ -278,6 +279,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
 
   private void cleanupOnTouchUp(TextView textView) {
     wasLongPressRegistered = false;
+    clickableSpanUnderTouchOnActionDown = null;
     removeUrlHighlightColor(textView);
     removeLongPressCallback(textView);
   }
