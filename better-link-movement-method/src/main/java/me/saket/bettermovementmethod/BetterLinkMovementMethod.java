@@ -341,7 +341,6 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     final int spanStart = text.getSpanStart(clickableSpan);
     final int spanEnd = text.getSpanEnd(clickableSpan);
     text.setSpan(new BackgroundColorSpan(textView.getHighlightColor()), spanStart, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-    textView.setText(text);
 
     Selection.setSelection(text, spanStart, spanEnd);
   }
@@ -361,8 +360,6 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     for (BackgroundColorSpan highlightSpan : highlightSpans) {
       text.removeSpan(highlightSpan);
     }
-
-    textView.setText(text);
 
     Selection.removeSelection(text);
   }
