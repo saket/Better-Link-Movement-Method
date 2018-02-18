@@ -56,18 +56,6 @@ BetterLinkMovementMethod.linkify(int linkifyMask, Activity);
 ## Examples
 
 ```java
-BetterLinkMovementMethod method = BetterLinkMovementMethod.linkify(Linkify.ALL, textView);
-method.setOnLinkClickListener((textView, url) -> {
-  // Do something with the URL and return true to indicate that this URL was handled.
-  // Otherwise, return false to let the framework handle the URL.
-  return true;
-});
-method.setOnLinkLongClickListener((textView, url) -> {
-  // Handle long-clicks.
-  return true;
-});
-
-// Or the less verbose way
 BetterLinkMovementMethod
     .linkify(Linkify.ALL, textView)
     .setOnLinkClickListener((textView, url) -> {
@@ -84,7 +72,7 @@ You can also choose to go the shorter route of registering BetterLinkMovementMet
 
 ```java
 @Override
-protected void onCreate(Bundle savedInstanceState) {
+void onCreate(Bundle savedInstanceState) {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.activity_main);
 
@@ -97,7 +85,7 @@ When using in a non-Activity context (e.g., Fragments), you can also pass a View
 ```java
 @Nullable
 @Override
-public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
   View view = inflater.inflate(R.layout.your_fragment, container, false);
 
   BetterLinkMovementMethod.linkify(Linkify.ALL, ((ViewGroup) view));
@@ -113,7 +101,7 @@ If you think that the APIs or the implementation can be improved, please feel fr
 ## License
 
 ```
-Copyright 2017 Saket Narayan.
+Copyright 2018 Saket Narayan.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
