@@ -10,7 +10,7 @@ android {
 
   defaultConfig {
     applicationId 'me.saket.betterlinkmovement.sample'
-    minSdkVersion 21
+    minSdkVersion 23
     targetSdkVersion versions.targetSdk
     versionCode versions.libraryVersionCode
     versionName versions.libraryVersionName
