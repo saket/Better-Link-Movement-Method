@@ -6,7 +6,6 @@ repositories {
 
 android {
   compileSdkVersion versions.compileSdk
-  buildToolsVersion versions.buildTools
 
   defaultConfig {
     applicationId 'me.saket.betterlinkmovement.sample'
