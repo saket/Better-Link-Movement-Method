@@ -338,9 +338,12 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     }
     isUrlHighlighted = true;
 
-    final int spanStart = text.getSpanStart(clickableSpan);
-    final int spanEnd = text.getSpanEnd(clickableSpan);
-    text.setSpan(new BackgroundColorSpan(textView.getHighlightColor()), spanStart, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    int spanStart = text.getSpanStart(clickableSpan);
+    int spanEnd = text.getSpanEnd(clickableSpan);
+    BackgroundColorSpan highlightSpan = new BackgroundColorSpan(textView.getHighlightColor());
+    text.setSpan(highlightSpan, spanStart, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+    textView.setTag(R.id.bettermovementmethod_highlight_background_span, highlightSpan);
 
     Selection.setSelection(text, spanStart, spanEnd);
   }
@@ -354,12 +357,9 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
     }
     isUrlHighlighted = false;
 
-    final Spannable text = (Spannable) textView.getText();
-
-    BackgroundColorSpan[] highlightSpans = text.getSpans(0, text.length(), BackgroundColorSpan.class);
-    for (BackgroundColorSpan highlightSpan : highlightSpans) {
-      text.removeSpan(highlightSpan);
-    }
+    Spannable text = (Spannable) textView.getText();
+    BackgroundColorSpan highlightSpan = (BackgroundColorSpan) textView.getTag(R.id.bettermovementmethod_highlight_background_span);
+    text.removeSpan(highlightSpan);
 
     Selection.removeSelection(text);
   }
