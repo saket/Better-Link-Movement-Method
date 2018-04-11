@@ -3,4 +3,6 @@
   <color name="colorPrimary">#FFFFFF</color>
   <color name="colorPrimaryDark">#AAA</color>
   <color name="colorAccent">#FF4081</color>
+
+  <color name="wayneTower">#2c4089ff</color>
 </resources>

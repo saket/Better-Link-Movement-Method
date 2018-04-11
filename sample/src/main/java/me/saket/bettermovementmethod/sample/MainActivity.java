@@ -3,9 +3,13 @@ package me.saket.bettermovementmethod.sample;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
 import android.text.util.Linkify;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 import me.saket.bettermovementmethod.BetterLinkMovementMethod.OnLinkLongClickListener;
 
@@ -26,6 +30,12 @@ public class MainActivity extends Activity {
     BetterLinkMovementMethod.linkifyHtml(wayneTowerIntroView)
         .setOnLinkClickListener(urlClickListener)
         .setOnLinkLongClickListener(longClickListener);
+
+    // https://github.com/Saketme/Better-Link-Movement-Method/issues/8
+    Spannable introductionText = (Spannable) wayneTowerIntroView.getText();
+    int start = introductionText.toString().indexOf("Wayne tower");
+    int end = start + "Wayne tower".length();
+    introductionText.setSpan(new BackgroundColorSpan(getColor(R.color.wayneTower)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
   }
 
   private final BetterLinkMovementMethod.OnLinkClickListener urlClickListener = (view, url) -> {
