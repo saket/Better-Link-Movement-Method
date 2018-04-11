@@ -4,8 +4,8 @@ buildscript {
       'compileSdk'        : 26,
       'minSdk'            : 16,
       'targetSdk'         : 26,
-      'libraryVersionName': '2.2.0',
-      'libraryVersionCode': 6,
+      'libraryVersionName': '2.3.0',
+      'libraryVersionCode': 7,
   ]
 
   repositories {
