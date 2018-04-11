@@ -110,6 +110,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
    *
    * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
    */
+  @SuppressWarnings("unused")
   public static BetterLinkMovementMethod linkifyHtml(ViewGroup viewGroup) {
     return linkify(LINKIFY_NONE, viewGroup);
   }
@@ -135,6 +136,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
    *
    * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
    */
+  @SuppressWarnings("unused")
   public static BetterLinkMovementMethod linkifyHtml(Activity activity) {
     return linkify(LINKIFY_NONE, activity);
   }
@@ -143,6 +145,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
    * Get a static instance of BetterLinkMovementMethod. Do note that registering a click listener on the returned
    * instance is not supported because it will potentially be shared on multiple TextViews.
    */
+  @SuppressWarnings("unused")
   public static BetterLinkMovementMethod getInstance() {
     if (singleInstance == null) {
       singleInstance = new BetterLinkMovementMethod();
@@ -403,7 +406,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
   protected static final class LongPressTimer implements Runnable {
     private OnTimerReachedListener onTimerReachedListener;
 
-    interface OnTimerReachedListener {
+    protected interface OnTimerReachedListener {
       void onTimerReached();
     }
 
@@ -437,16 +440,16 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
       return new ClickableSpanWithText(span, text);
     }
 
-    private ClickableSpanWithText(ClickableSpan span, String text) {
+    protected ClickableSpanWithText(ClickableSpan span, String text) {
       this.span = span;
       this.text = text;
     }
 
-    ClickableSpan span() {
+    protected ClickableSpan span() {
       return span;
     }
 
-    String text() {
+    protected String text() {
       return text;
     }
   }
