@@ -1,6 +1,5 @@
 package me.saket.bettermovementmethod.sample;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spannable;
@@ -10,68 +9,70 @@ import android.text.util.Linkify;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 import me.saket.bettermovementmethod.BetterLinkMovementMethod.OnLinkLongClickListener;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        //setSupportActionBar(findViewById(R.id.toolbar));
+        // Add links to all TextViews.
+        BetterLinkMovementMethod.linkify(Linkify.ALL, this)
+                .setOnLinkClickListener(urlClickListener)
+                .setOnLinkLongClickListener(longClickListener);
 
-    // Add links to all TextViews.
-    BetterLinkMovementMethod.linkify(Linkify.ALL, this)
-        .setOnLinkClickListener(urlClickListener)
-        .setOnLinkLongClickListener(longClickListener);
+        TextView wayneTowerIntroView = findViewById(R.id.wayne_tower_intro);
+        wayneTowerIntroView.setText(Html.fromHtml(getString(R.string.bettermovementmethod_dummy_text_long)));
+        BetterLinkMovementMethod.linkifyHtml(wayneTowerIntroView)
+                .setOnLinkClickListener(urlClickListener)
+                .setOnLinkLongClickListener(longClickListener);
 
-    TextView wayneTowerIntroView = findViewById(R.id.wayne_tower_intro);
-    wayneTowerIntroView.setText(Html.fromHtml(getString(R.string.bettermovementmethod_dummy_text_long)));
-    BetterLinkMovementMethod.linkifyHtml(wayneTowerIntroView)
-        .setOnLinkClickListener(urlClickListener)
-        .setOnLinkLongClickListener(longClickListener);
-
-    // https://github.com/Saketme/Better-Link-Movement-Method/issues/8
-    Spannable introductionText = (Spannable) wayneTowerIntroView.getText();
-    int start = introductionText.toString().indexOf("Wayne tower");
-    int end = start + "Wayne tower".length();
-    introductionText.setSpan(new BackgroundColorSpan(getColor(R.color.wayneTower)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-  }
-
-  private final BetterLinkMovementMethod.OnLinkClickListener urlClickListener = (view, url) -> {
-    if (isPhoneNumber(url)) {
-      PhoneLinkPopupMenu phonePopupMenu = new PhoneLinkPopupMenu(this, view, url);
-      phonePopupMenu.show();
-
-    } else if (isEmailAddress(url)) {
-      EmailLinkPopupMenu emailPopupMenu = new EmailLinkPopupMenu(this, view);
-      emailPopupMenu.show();
-
-    } else if (isMapAddress(url)) {
-      MapLinkPopupMenu mapPopupMenu = new MapLinkPopupMenu(this, view);
-      mapPopupMenu.show();
-
-    } else {
-      Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+        // https://github.com/Saketme/Better-Link-Movement-Method/issues/8
+        Spannable introductionText = (Spannable) wayneTowerIntroView.getText();
+        int start = introductionText.toString().indexOf("Wayne tower");
+        int end = start + "Wayne tower".length();
+        introductionText.setSpan(new BackgroundColorSpan(ContextCompat.getColor(this, R.color.wayneTower)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    return true;
-  };
+    private final BetterLinkMovementMethod.OnLinkClickListener urlClickListener = (view, url) -> {
+        if (isPhoneNumber(url)) {
+            PhoneLinkPopupMenu phonePopupMenu = new PhoneLinkPopupMenu(this, view, url);
+            phonePopupMenu.show();
 
-  private final OnLinkLongClickListener longClickListener = (textView, url) -> {
-    Toast.makeText(this, "Long-click: " + url, Toast.LENGTH_SHORT).show();
-    return true;
-  };
+        } else if (isEmailAddress(url)) {
+            EmailLinkPopupMenu emailPopupMenu = new EmailLinkPopupMenu(this, view);
+            emailPopupMenu.show();
 
-  private boolean isPhoneNumber(String url) {
-    return url.startsWith("tel:");
-  }
+        } else if (isMapAddress(url)) {
+            MapLinkPopupMenu mapPopupMenu = new MapLinkPopupMenu(this, view);
+            mapPopupMenu.show();
 
-  private boolean isEmailAddress(String url) {
-    return url.contains("@");
-  }
+        } else {
+            Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+        }
 
-  private boolean isMapAddress(String url) {
-    return url.contains("goo.gl/maps");
-  }
+        return true;
+    };
+
+    private final OnLinkLongClickListener longClickListener = (textView, url) -> {
+        Toast.makeText(this, "Long-click: " + url, Toast.LENGTH_SHORT).show();
+        return true;
+    };
+
+    private boolean isPhoneNumber(String url) {
+        return url.startsWith("tel:");
+    }
+
+    private boolean isEmailAddress(String url) {
+        return url.contains("@");
+    }
+
+    private boolean isMapAddress(String url) {
+        return url.contains("goo.gl/maps");
+    }
 }

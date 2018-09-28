@@ -9,7 +9,7 @@ android {
 
   defaultConfig {
     applicationId 'me.saket.betterlinkmovement.sample'
-    minSdkVersion 23
+    minSdkVersion versions.minSdk
     targetSdkVersion versions.targetSdk
     versionCode versions.libraryVersionCode
     versionName versions.libraryVersionName
@@ -32,5 +32,7 @@ android {
 }
 
 dependencies {
-  compile project(path: ':better-link-movement-method')
+  implementation project(path: ':better-link-movement-method')
+  implementation 'androidx.appcompat:appcompat:1.0.0'
+
 }
