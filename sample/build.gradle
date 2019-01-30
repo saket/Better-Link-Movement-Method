@@ -33,6 +33,6 @@ android {
 
 dependencies {
   implementation project(path: ':better-link-movement-method')
-  implementation 'androidx.appcompat:appcompat:1.0.0'
+  implementation 'androidx.appcompat:appcompat:1.0.2'
 
 }

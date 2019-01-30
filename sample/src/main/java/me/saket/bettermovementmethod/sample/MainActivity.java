@@ -1,11 +1,15 @@
 package me.saket.bettermovementmethod.sample;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.text.util.Linkify;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,5 +78,34 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isMapAddress(String url) {
         return url.contains("goo.gl/maps");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        String url = null;
+        switch (item.getItemId()) {
+            case R.id.menuItem_all_my_apps:
+                url = "https://play.google.com/store/apps/developer?id=AndroidDeveloperLB";
+                break;
+            case R.id.menuItem_all_my_repositories:
+                url = "https://github.com/AndroidDeveloperLB";
+                break;
+            case R.id.menuItem_current_repository_website:
+                url = "https://github.com/AndroidDeveloperLB/Better-Link-Movement-Method";
+                break;
+        }
+        if (url == null)
+            return true;
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        startActivity(intent);
+        return true;
     }
 }
