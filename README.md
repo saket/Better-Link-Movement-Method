@@ -14,9 +14,7 @@ A detailed explanation of why (and when) you should use `BetterLinkMovementMetho
 
 Feel free to give a shoutout on Twitter [@Saketme](https://twitter.com/saketme) if you're using this in your app.
 
-## Download
-
-Add this to your module's `build.gradle`:
+## Usage
 
 ```gradle
 repositories {
@@ -28,75 +26,31 @@ dependencies {
 }
 ```
 
+`BetterLinkMovementMethod` is designed to be a drop-in replacement for `LinkMovementMethod`:
+
+```kotlin
+val textView = findViewById(...)
+textView.movementMethod = BetterLinkMovementMethod.getInstance()
+```
+
+Click listeners can be registered by creating a unique instance of `BetterLinkMovementMethod` for each `TextView`:
+
+```kotlin
+textView.movementMethod = BetterLinkMovementMethod.newInstance().apply {
+  setOnLinkClickListener { textView, url ->
+    // Handle click or return false to let the framework handle this link.
+    true
+  }
+  setOnLinkLongClickListener { textView, url ->
+    // Handle long-click or return false to let the framework handle this link.
+    true
+  }
+}
+```
+
 ## Sample
 
 You can find sample APKs on the [releases page](https://github.com/Saketme/Better-Link-Movement-Method/releases) to see `BetterLinkMovementMethod` in action.
-
-## Usage
-
-BetterLinkMovementMethod is designed to be a drop-in replacement for LinkMovementMethod.
-
-```java
-TextView textView = (TextView) findViewById(R.id.text1);
-textView.setMovementMethod(BetterLinkMovementMethod.newInstance());
-Linkify.addLinks(textView, Linkify.PHONE_NUMBERS);
-```
-
-However, the easiest way to get started is by using one of its linkify() methods:
-
-```java
-BetterLinkMovementMethod.linkify(int linkifyMask, TextView...);
-BetterLinkMovementMethod.linkify(int linkifyMask, ViewGroup);
-BetterLinkMovementMethod.linkify(int linkifyMask, Activity);
-
-// Where linkifyMask can be one of Linkify.ALL, Linkify.PHONE_NUMBERS,
-// Linkify.MAP_ADDRESSES, Linkify.WEB_URLS and Linkify.EMAIL_ADDRESSES.
-```
-
-## Examples
-
-```java
-BetterLinkMovementMethod
-    .linkify(Linkify.ALL, textView)
-    .setOnLinkClickListener((textView, url) -> {
-      // Handle clicks.
-      return true;
-    })
-    .setOnLinkLongClickListener((textView, url) -> {
-      // Handle long-clicks.
-      return true;
-    });
-```
-
-You can also choose to go the shorter route of registering BetterLinkMovementMethod on all TextViews in your Activity’s layout in one go:
-
-```java
-@Override
-void onCreate(Bundle savedInstanceState) {
-  super.onCreate(savedInstanceState);
-  setContentView(R.layout.activity_main);
-
-  BetterLinkMovementMethod.linkify(Linkify.ALL, this);
-}
-```
-
-When using in a non-Activity context (e.g., Fragments), you can also pass a ViewGroup as the 2nd param:
-
-```java
-@Nullable
-@Override
-View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-  View view = inflater.inflate(R.layout.your_fragment, container, false);
-
-  BetterLinkMovementMethod.linkify(Linkify.ALL, ((ViewGroup) view));
-
-  return view;
-}
-```
-
-## Contributions
-
-If you think that the APIs or the implementation can be improved, please feel free to raise a pull-request.
 
 ## License
 
