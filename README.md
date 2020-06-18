@@ -12,21 +12,17 @@ BetterLinkMovementMethod improves over `LinkMovementMethod`, by fixing its flaws
 
 A detailed explanation of why (and when) you should use `BetterLinkMovementMethod` can be read on my blog: http://saket.me/better-url-handler-textview-android/
 
-Feel free to give a shoutout on Twitter [@Saketme](https://twitter.com/saketme) if you're using this in your app.
-
 ## Usage
-
+`BetterLinkMovementMethod` is designed to be a drop-in replacement for `LinkMovementMethod`:
 ```gradle
 repositories {
-    jcenter()
+  jcenter()
 }
 
 dependencies {
-    implementation 'me.saket:better-link-movement-method:2.2.0'
+  implementation 'me.saket:better-link-movement-method:2.2.0'
 }
 ```
-
-`BetterLinkMovementMethod` is designed to be a drop-in replacement for `LinkMovementMethod`:
 
 ```kotlin
 val textView = findViewById(...)
