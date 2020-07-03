@@ -48,6 +48,17 @@ textView.movementMethod = BetterLinkMovementMethod.newInstance().apply {
 
 You can find sample APKs on the [releases page](https://github.com/Saketme/Better-Link-Movement-Method/releases) to see `BetterLinkMovementMethod` in action.
 
+## Espresso Testing
+
+You can use existing [`ViewActions`](https://developer.android.com/reference/androidx/test/espresso/action/ViewActions), which are: [`openLinkWithText`](https://developer.android.com/reference/androidx/test/espresso/action/ViewActions#openlinkwithtext), [`openLinkWithUri`](https://developer.android.com/reference/androidx/test/espresso/action/ViewActions#openlinkwithuri) and [`openLink`](https://developer.android.com/reference/androidx/test/espresso/action/ViewActions#openlink):
+
+```kotlin
+onView(
+   withId(R.id.textview_id)
+).perform(
+   openLinkWithUri(URL)
+)
+```
 ## License
 
 ```
