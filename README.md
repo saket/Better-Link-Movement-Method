@@ -2,23 +2,19 @@
 
 ![Better-Link-Movement-Method](https://github.com/Saketme/Better-Link-Movement-Method/blob/master/EXAMPLE.gif)
 
-When `android:autoLink="all"` or `Linkify.addLinks(textView, Linkify.ALL)` is used to add links to web URLs, phone-numbers, map addresses or email addresses in a TextView, Android uses a class known as `LinkMovementMethod` that handles highlighting links when they're focused and dispatching an Intent when they're clicked.
+When `android:autoLink="all"` or `Linkify.addLinks(textView, Linkify.ALL)` is used to add links to web URLs, phone-numbers, map addresses or email addresses in a TextView, Android uses a class known as `LinkMovementMethod` for highlighting links when they're focused and dispatching an Intent when they're clicked.
 
-BetterLinkMovementMethod improves over `LinkMovementMethod`, by fixing its flaws:
+BetterLinkMovementMethod improves over `LinkMovementMethod`, by fixing some of its flaws:
 
-* No support for custom URL click listeners. For eg., phone numbers always show up in the dialer when clicked and there's no way to manually handle the click.
-* Incorrect calculation of touch areas for links, resulting in ghost touch areas ([Example video](http://saket.me/wp-content/uploads/2016/09/Incorrect-touch-areas.mp4))
-* Unreliable highlighting of links ([Example video](http://saket.me/wp-content/uploads/2016/09/Unreliable-highlighting.mp4))
+* No support for custom click listeners. For eg., phone numbers always show up in the dialer when clicked and there's no way to change that.
+* Incorrect calculation of touch areas for links, resulting in ghost touch areas ([video](http://saket.me/wp-content/uploads/2016/09/Incorrect-touch-areas.mp4)).
+* Unreliable highlighting of links ([video](http://saket.me/wp-content/uploads/2016/09/Unreliable-highlighting.mp4)).
 
 A detailed explanation of why (and when) you should use `BetterLinkMovementMethod` can be read on my blog: http://saket.me/better-url-handler-textview-android/
 
 ## Usage
 `BetterLinkMovementMethod` is designed to be a drop-in replacement for `LinkMovementMethod`:
 ```gradle
-repositories {
-  jcenter()
-}
-
 dependencies {
   implementation 'me.saket:better-link-movement-method:2.2.0'
 }
@@ -43,10 +39,6 @@ textView.movementMethod = BetterLinkMovementMethod.newInstance().apply {
   }
 }
 ```
-
-## Sample
-
-You can find sample APKs on the [releases page](https://github.com/Saketme/Better-Link-Movement-Method/releases) to see `BetterLinkMovementMethod` in action.
 
 ## License
 
