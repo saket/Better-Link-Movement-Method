@@ -22,6 +22,7 @@ dependencies {
 
 ```kotlin
 val textView = findViewById(...)
+Linkify.addLinks(textView, Linkify.ALL)
 textView.movementMethod = BetterLinkMovementMethod.getInstance()
 ```
 
