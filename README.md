@@ -6,7 +6,7 @@ When `android:autoLink="all"` or `Linkify.addLinks(textView, Linkify.ALL)` is us
 
 BetterLinkMovementMethod improves over `LinkMovementMethod`, by fixing some of its flaws:
 
-* No support for custom click listeners. For eg., phone numbers always show up in the dialer when clicked and there's no way to change that.
+* No support for custom click listeners. For e.g., phone numbers always show up in the dialer when clicked and there's no way to change that.
 * Incorrect calculation of touch areas for links, resulting in ghost touch areas ([video](http://saket.me/wp-content/uploads/2016/09/Incorrect-touch-areas.mp4)).
 * Unreliable highlighting of links ([video](http://saket.me/wp-content/uploads/2016/09/Unreliable-highlighting.mp4)).
 

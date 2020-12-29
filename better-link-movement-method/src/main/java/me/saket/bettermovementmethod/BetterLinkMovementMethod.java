@@ -191,7 +191,6 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
       if (child instanceof ViewGroup) {
         // Recursively find child TextViews.
         rAddLinks(linkifyMask, ((ViewGroup) child), movementMethod);
-
       } else if (child instanceof TextView) {
         TextView textView = (TextView) child;
         addLinks(linkifyMask, movementMethod, textView);
