@@ -18,6 +18,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
+import android.text.SpannableString;
 
 /**
  * Handles URL clicks on TextViews. Unlike the default implementation, this:
