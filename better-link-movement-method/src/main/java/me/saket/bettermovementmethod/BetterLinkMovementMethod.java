@@ -200,9 +200,26 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
 
   private static void addLinks(int linkifyMask, BetterLinkMovementMethod movementMethod, TextView textView) {
     textView.setMovementMethod(movementMethod);
-    if (linkifyMask != LINKIFY_NONE) {
-      Linkify.addLinks(textView, linkifyMask);
+    URLSpan[] htmlUrlSpans = null;
+    if(textView.getText() instanceof SpannableString){
+      htmlUrlSpans = ((SpannableString)textView.getText()).getSpans(0, textView.getText().length(), URLSpan.class);
     }
+
+    SpannableString buffer = new SpannableString(textView.getText());
+
+    if (linkifyMask != LINKIFY_NONE) {
+      Linkify.addLinks(buffer, linkifyMask);
+    }
+
+    if(htmlUrlSpans != null && textView.getText() instanceof SpannableString){
+      for (URLSpan span : htmlUrlSpans) {
+        int end = ((SpannableString)textView.getText()).getSpanEnd(span);
+        int start = ((SpannableString)textView.getText()).getSpanStart(span);
+        buffer.setSpan(span, start,end,0);
+      }
+    }
+
+    textView.setText(buffer);
   }
 
   @Override
