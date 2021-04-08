@@ -2,7 +2,7 @@
 
 ![Better-Link-Movement-Method](https://github.com/Saketme/Better-Link-Movement-Method/blob/master/EXAMPLE.gif)
 
-When `android:autoLink="all"` or `Linkify.addLinks(textView, Linkify.ALL)` is used to add links to web URLs, phone-numbers, map addresses or email addresses in a TextView, Android uses a class known as `LinkMovementMethod` for highlighting links when they're focused and dispatching an Intent when they're clicked.
+When `android:autoLink` or `Linkify.addLinks` is used to add links to a TextView, Android uses a class known as `LinkMovementMethod` for highlighting links when they're focused and dispatching Intents when they're clicked.
 
 BetterLinkMovementMethod improves over `LinkMovementMethod`, by fixing some of its flaws:
 
@@ -10,7 +10,7 @@ BetterLinkMovementMethod improves over `LinkMovementMethod`, by fixing some of i
 * Incorrect calculation of touch areas for links, resulting in ghost touch areas ([video](http://saket.me/wp-content/uploads/2016/09/Incorrect-touch-areas.mp4)).
 * Unreliable highlighting of links ([video](http://saket.me/wp-content/uploads/2016/09/Unreliable-highlighting.mp4)).
 
-A detailed explanation of why (and when) you should use `BetterLinkMovementMethod` can be read on my blog: http://saket.me/better-url-handler-textview-android/
+A detailed explanation of why (and when) you should use `BetterLinkMovementMethod` can be read here: http://saket.me/better-url-handler-textview-android/
 
 ## Usage
 `BetterLinkMovementMethod` is designed to be a drop-in replacement for `LinkMovementMethod`:
@@ -38,7 +38,6 @@ textView.movementMethod = BetterLinkMovementMethod.newInstance().apply {
     // Handle long-click or return false to let the framework handle this link.
     true
   }
-}
 ```
 
 ## License
